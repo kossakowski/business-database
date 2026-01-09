@@ -21,6 +21,15 @@ from lawfirm_cli.entities import (
     update_entity,
     delete_entity,
     get_related_counts,
+    add_identifier,
+    update_identifier,
+    remove_identifier,
+    add_address,
+    update_address,
+    remove_address,
+    add_contact,
+    update_contact,
+    remove_contact,
     EntityNotFoundError,
     DuplicateIdentifierError,
 )
@@ -199,7 +208,7 @@ def entity_view(entity_id):
 @entity.command("update")
 @click.argument("entity_id")
 def entity_update(entity_id):
-    """Update an entity."""
+    """Update an entity (interactive menu)."""
     available, message = check_entities_available()
     if not available:
         print_error(message)
@@ -208,28 +217,471 @@ def entity_update(entity_id):
     try:
         # Get existing entity
         existing = get_entity(entity_id)
-        entity_type = existing["entity_type"]
         
-        console.print()
-        console.print(f"[bold cyan]═══ Update Entity: {existing['canonical_label']} ═══[/bold cyan]")
-        console.print("[dim]Press Enter to keep current value, or type a new value.[/dim]")
-        
-        # Prompt for updates
-        entity_data = prompt_entity_fields(entity_type, existing_data=existing)
-        
-        # Confirm
-        console.print()
-        if not click.confirm("Save changes?", default=True):
-            print_warning("Cancelled.")
-            return
-        
-        update_entity(entity_id, entity_data)
-        print_success("Entity updated successfully!")
+        while True:
+            console.print()
+            console.print(f"[bold cyan]═══ Update Entity: {existing['canonical_label']} ═══[/bold cyan]")
+            console.print()
+            console.print("[bold]What would you like to update?[/bold]")
+            console.print()
+            console.print("  [cyan]1.[/cyan] Core fields (name, status, notes)")
+            console.print("  [cyan]2.[/cyan] Person/Company details")
+            console.print("  [cyan]3.[/cyan] Identifiers (PESEL, NIP, KRS, etc.)")
+            console.print("  [cyan]4.[/cyan] Addresses")
+            console.print("  [cyan]5.[/cyan] Contacts (email, phone, etc.)")
+            console.print("  [cyan]0.[/cyan] Done - exit")
+            console.print()
+            
+            choice = console.input("[bold]Select option (0-5):[/bold] ").strip()
+            
+            if choice == "0":
+                print_info("Update complete.")
+                break
+            elif choice == "1":
+                _update_core_fields(entity_id, existing)
+                existing = get_entity(entity_id)  # Refresh
+            elif choice == "2":
+                _update_type_specific_fields(entity_id, existing)
+                existing = get_entity(entity_id)  # Refresh
+            elif choice == "3":
+                _manage_identifiers(entity_id, existing)
+                existing = get_entity(entity_id)  # Refresh
+            elif choice == "4":
+                _manage_addresses(entity_id, existing)
+                existing = get_entity(entity_id)  # Refresh
+            elif choice == "5":
+                _manage_contacts(entity_id, existing)
+                existing = get_entity(entity_id)  # Refresh
+            else:
+                print_warning("Invalid option. Please enter 0-5.")
         
     except EntityNotFoundError:
         print_error(f"Entity not found: {entity_id}")
     except Exception as e:
         print_error(f"Failed to update entity: {e}")
+
+
+def _update_core_fields(entity_id: str, existing: dict):
+    """Update core entity fields."""
+    from lawfirm_cli.prompts import prompt_field
+    
+    console.print()
+    console.print("[bold magenta]── Update Core Fields ──[/bold magenta]")
+    console.print("[dim]Press Enter to keep current value.[/dim]")
+    
+    data = {}
+    data["canonical_label"] = prompt_field("entity.canonical_label", existing.get("canonical_label"))
+    data["status"] = prompt_field("entity.status", existing.get("status"))
+    data["notes"] = prompt_field("entity.notes", existing.get("notes"))
+    
+    # Filter out None values (unchanged)
+    data = {k: v for k, v in data.items() if v is not None}
+    
+    if data:
+        update_entity(entity_id, data)
+        print_success("Core fields updated!")
+    else:
+        print_info("No changes made.")
+
+
+def _update_type_specific_fields(entity_id: str, existing: dict):
+    """Update type-specific fields."""
+    from lawfirm_cli.prompts import prompt_field
+    
+    entity_type = existing["entity_type"]
+    
+    console.print()
+    console.print("[bold magenta]── Update Details ──[/bold magenta]")
+    console.print("[dim]Press Enter to keep current value.[/dim]")
+    
+    data = {}
+    
+    if entity_type == "PHYSICAL_PERSON":
+        data["first_name"] = prompt_field("person.first_name", existing.get("first_name"))
+        data["middle_names"] = prompt_field("person.middle_names", existing.get("middle_names"))
+        data["last_name"] = prompt_field("person.last_name", existing.get("last_name"))
+        data["date_of_birth"] = prompt_field("person.date_of_birth", existing.get("date_of_birth"))
+        data["citizenship_country"] = prompt_field("person.citizenship_country", existing.get("citizenship_country"))
+        is_deceased = prompt_field("person.is_deceased", str(existing.get("is_deceased", False)).lower())
+        if is_deceased is not None:
+            data["is_deceased"] = is_deceased == "true"
+    else:
+        data["registered_name"] = prompt_field("legal.registered_name", existing.get("registered_name"))
+        data["short_name"] = prompt_field("legal.short_name", existing.get("short_name"))
+        data["legal_kind"] = prompt_field("legal.legal_kind", existing.get("legal_kind"))
+        data["legal_nature"] = prompt_field("legal.legal_nature", existing.get("legal_nature"))
+        data["legal_form_suffix"] = prompt_field("legal.legal_form_suffix", existing.get("legal_form_suffix"))
+        data["country"] = prompt_field("legal.country", existing.get("country"))
+    
+    # Filter out None values
+    data = {k: v for k, v in data.items() if v is not None}
+    
+    if data:
+        update_entity(entity_id, data)
+        print_success("Details updated!")
+    else:
+        print_info("No changes made.")
+
+
+def _manage_identifiers(entity_id: str, existing: dict):
+    """Manage entity identifiers (add/edit/delete)."""
+    from lawfirm_cli.prompts import prompt_field
+    from rich.prompt import Prompt
+    
+    identifiers = existing.get("identifiers", [])
+    
+    while True:
+        console.print()
+        console.print("[bold magenta]── Manage Identifiers ──[/bold magenta]")
+        console.print()
+        
+        if identifiers:
+            console.print("[bold]Current identifiers:[/bold]")
+            for i, ident in enumerate(identifiers, 1):
+                console.print(f"  [cyan]{i}.[/cyan] {ident['identifier_type']}: {ident['identifier_value']}")
+        else:
+            console.print("[dim]No identifiers.[/dim]")
+        
+        console.print()
+        console.print("  [cyan]A.[/cyan] Add new identifier")
+        if identifiers:
+            console.print("  [cyan]E.[/cyan] Edit identifier")
+            console.print("  [cyan]D.[/cyan] Delete identifier")
+        console.print("  [cyan]0.[/cyan] Back to main menu")
+        console.print()
+        
+        choice = console.input("[bold]Select option:[/bold] ").strip().upper()
+        
+        if choice == "0":
+            break
+        elif choice == "A":
+            _add_identifier_prompt(entity_id, existing["entity_type"])
+            identifiers = get_entity(entity_id).get("identifiers", [])
+        elif choice == "E" and identifiers:
+            _edit_identifier_prompt(identifiers)
+            identifiers = get_entity(entity_id).get("identifiers", [])
+        elif choice == "D" and identifiers:
+            _delete_identifier_prompt(identifiers)
+            identifiers = get_entity(entity_id).get("identifiers", [])
+        else:
+            print_warning("Invalid option.")
+
+
+def _add_identifier_prompt(entity_id: str, entity_type: str):
+    """Prompt to add a new identifier."""
+    from lawfirm_cli.prompts import prompt_field
+    from rich.prompt import Prompt
+    
+    console.print()
+    if entity_type == "PHYSICAL_PERSON":
+        id_types = ["PESEL", "NIP", "REGON", "OTHER"]
+    else:
+        id_types = ["KRS", "NIP", "REGON", "RFR", "OTHER"]
+    
+    console.print("[bold]Select identifier type:[/bold]")
+    for i, t in enumerate(id_types, 1):
+        console.print(f"  {i}. {t}")
+    
+    type_choice = Prompt.ask("Enter number")
+    try:
+        id_type = id_types[int(type_choice) - 1]
+    except (ValueError, IndexError):
+        print_warning("Invalid selection.")
+        return
+    
+    value = prompt_field(f"id.{id_type}", required=True)
+    if not value:
+        print_warning("Cancelled.")
+        return
+    
+    registry_name = None
+    if id_type == "OTHER":
+        registry_name = prompt_field("id.OTHER_REGISTRY_NAME")
+    
+    try:
+        add_identifier(entity_id, id_type, value, registry_name)
+        print_success(f"Added {id_type}: {value}")
+    except DuplicateIdentifierError:
+        print_error(f"This {id_type} already exists in the system.")
+
+
+def _edit_identifier_prompt(identifiers: list):
+    """Prompt to edit an identifier."""
+    from lawfirm_cli.prompts import prompt_field
+    from rich.prompt import Prompt
+    
+    console.print()
+    num = Prompt.ask("Enter identifier number to edit")
+    try:
+        idx = int(num) - 1
+        ident = identifiers[idx]
+    except (ValueError, IndexError):
+        print_warning("Invalid selection.")
+        return
+    
+    console.print(f"\nEditing {ident['identifier_type']}: {ident['identifier_value']}")
+    
+    new_value = prompt_field(f"id.{ident['identifier_type']}", ident['identifier_value'])
+    if new_value and new_value != ident['identifier_value']:
+        update_identifier(ident['id'], new_value, ident.get('registry_name'))
+        print_success(f"Updated to: {new_value}")
+    else:
+        print_info("No changes made.")
+
+
+def _delete_identifier_prompt(identifiers: list):
+    """Prompt to delete an identifier."""
+    from rich.prompt import Prompt, Confirm
+    
+    console.print()
+    num = Prompt.ask("Enter identifier number to delete")
+    try:
+        idx = int(num) - 1
+        ident = identifiers[idx]
+    except (ValueError, IndexError):
+        print_warning("Invalid selection.")
+        return
+    
+    if Confirm.ask(f"Delete {ident['identifier_type']}: {ident['identifier_value']}?", default=False):
+        remove_identifier(ident['id'])
+        print_success("Identifier deleted.")
+    else:
+        print_info("Cancelled.")
+
+
+def _manage_addresses(entity_id: str, existing: dict):
+    """Manage entity addresses (add/edit/delete)."""
+    addresses = existing.get("addresses", [])
+    
+    while True:
+        console.print()
+        console.print("[bold magenta]── Manage Addresses ──[/bold magenta]")
+        console.print()
+        
+        if addresses:
+            console.print("[bold]Current addresses:[/bold]")
+            for i, addr in enumerate(addresses, 1):
+                addr_str = f"{addr.get('street', '')} {addr.get('building_no', '')}".strip()
+                addr_str += f", {addr.get('postal_code', '')} {addr.get('city', '')}".strip(", ")
+                console.print(f"  [cyan]{i}.[/cyan] [{addr.get('address_type', 'MAIN')}] {addr_str}")
+        else:
+            console.print("[dim]No addresses.[/dim]")
+        
+        console.print()
+        console.print("  [cyan]A.[/cyan] Add new address")
+        if addresses:
+            console.print("  [cyan]E.[/cyan] Edit address")
+            console.print("  [cyan]D.[/cyan] Delete address")
+        console.print("  [cyan]0.[/cyan] Back to main menu")
+        console.print()
+        
+        choice = console.input("[bold]Select option:[/bold] ").strip().upper()
+        
+        if choice == "0":
+            break
+        elif choice == "A":
+            _add_address_prompt(entity_id)
+            addresses = get_entity(entity_id).get("addresses", [])
+        elif choice == "E" and addresses:
+            _edit_address_prompt(addresses)
+            addresses = get_entity(entity_id).get("addresses", [])
+        elif choice == "D" and addresses:
+            _delete_address_prompt(addresses)
+            addresses = get_entity(entity_id).get("addresses", [])
+        else:
+            print_warning("Invalid option.")
+
+
+def _add_address_prompt(entity_id: str):
+    """Prompt to add a new address."""
+    from lawfirm_cli.prompts import prompt_field
+    
+    console.print()
+    console.print("[bold]Add New Address[/bold]")
+    
+    addr = {}
+    addr["address_type"] = prompt_field("addr.address_type") or "MAIN"
+    addr["country"] = prompt_field("addr.country") or "PL"
+    addr["city"] = prompt_field("addr.city", required=True)
+    if not addr["city"]:
+        print_warning("City is required. Cancelled.")
+        return
+    addr["postal_code"] = prompt_field("addr.postal_code")
+    addr["street"] = prompt_field("addr.street")
+    addr["building_no"] = prompt_field("addr.building_no")
+    addr["unit_no"] = prompt_field("addr.unit_no")
+    
+    add_address(entity_id, addr)
+    print_success("Address added!")
+
+
+def _edit_address_prompt(addresses: list):
+    """Prompt to edit an address."""
+    from lawfirm_cli.prompts import prompt_field
+    from rich.prompt import Prompt
+    
+    console.print()
+    num = Prompt.ask("Enter address number to edit")
+    try:
+        idx = int(num) - 1
+        addr = addresses[idx]
+    except (ValueError, IndexError):
+        print_warning("Invalid selection.")
+        return
+    
+    console.print(f"\n[bold]Editing address (press Enter to keep current value)[/bold]")
+    
+    data = {}
+    data["address_type"] = prompt_field("addr.address_type", addr.get("address_type"))
+    data["country"] = prompt_field("addr.country", addr.get("country"))
+    data["city"] = prompt_field("addr.city", addr.get("city"))
+    data["postal_code"] = prompt_field("addr.postal_code", addr.get("postal_code"))
+    data["street"] = prompt_field("addr.street", addr.get("street"))
+    data["building_no"] = prompt_field("addr.building_no", addr.get("building_no"))
+    data["unit_no"] = prompt_field("addr.unit_no", addr.get("unit_no"))
+    
+    # Filter out None values
+    data = {k: v for k, v in data.items() if v is not None}
+    
+    if data:
+        update_address(addr['id'], data)
+        print_success("Address updated!")
+    else:
+        print_info("No changes made.")
+
+
+def _delete_address_prompt(addresses: list):
+    """Prompt to delete an address."""
+    from rich.prompt import Prompt, Confirm
+    
+    console.print()
+    num = Prompt.ask("Enter address number to delete")
+    try:
+        idx = int(num) - 1
+        addr = addresses[idx]
+    except (ValueError, IndexError):
+        print_warning("Invalid selection.")
+        return
+    
+    addr_str = f"{addr.get('city', '')} {addr.get('street', '')}".strip()
+    if Confirm.ask(f"Delete address: {addr_str}?", default=False):
+        remove_address(addr['id'])
+        print_success("Address deleted.")
+    else:
+        print_info("Cancelled.")
+
+
+def _manage_contacts(entity_id: str, existing: dict):
+    """Manage entity contacts (add/edit/delete)."""
+    contacts = existing.get("contacts", [])
+    
+    while True:
+        console.print()
+        console.print("[bold magenta]── Manage Contacts ──[/bold magenta]")
+        console.print()
+        
+        if contacts:
+            console.print("[bold]Current contacts:[/bold]")
+            for i, contact in enumerate(contacts, 1):
+                console.print(f"  [cyan]{i}.[/cyan] {contact['contact_type']}: {contact['contact_value']}")
+        else:
+            console.print("[dim]No contacts.[/dim]")
+        
+        console.print()
+        console.print("  [cyan]A.[/cyan] Add new contact")
+        if contacts:
+            console.print("  [cyan]E.[/cyan] Edit contact")
+            console.print("  [cyan]D.[/cyan] Delete contact")
+        console.print("  [cyan]0.[/cyan] Back to main menu")
+        console.print()
+        
+        choice = console.input("[bold]Select option:[/bold] ").strip().upper()
+        
+        if choice == "0":
+            break
+        elif choice == "A":
+            _add_contact_prompt(entity_id)
+            contacts = get_entity(entity_id).get("contacts", [])
+        elif choice == "E" and contacts:
+            _edit_contact_prompt(contacts)
+            contacts = get_entity(entity_id).get("contacts", [])
+        elif choice == "D" and contacts:
+            _delete_contact_prompt(contacts)
+            contacts = get_entity(entity_id).get("contacts", [])
+        else:
+            print_warning("Invalid option.")
+
+
+def _add_contact_prompt(entity_id: str):
+    """Prompt to add a new contact."""
+    from lawfirm_cli.prompts import prompt_field
+    from rich.prompt import Prompt
+    
+    console.print()
+    contact_types = ["EMAIL", "PHONE", "WEBSITE", "EPUAP", "OTHER"]
+    
+    console.print("[bold]Select contact type:[/bold]")
+    for i, t in enumerate(contact_types, 1):
+        console.print(f"  {i}. {t}")
+    
+    type_choice = Prompt.ask("Enter number")
+    try:
+        c_type = contact_types[int(type_choice) - 1]
+    except (ValueError, IndexError):
+        print_warning("Invalid selection.")
+        return
+    
+    value = prompt_field(f"contact.{c_type}", required=True)
+    if not value:
+        print_warning("Cancelled.")
+        return
+    
+    add_contact(entity_id, c_type, value)
+    print_success(f"Added {c_type}: {value}")
+
+
+def _edit_contact_prompt(contacts: list):
+    """Prompt to edit a contact."""
+    from lawfirm_cli.prompts import prompt_field
+    from rich.prompt import Prompt
+    
+    console.print()
+    num = Prompt.ask("Enter contact number to edit")
+    try:
+        idx = int(num) - 1
+        contact = contacts[idx]
+    except (ValueError, IndexError):
+        print_warning("Invalid selection.")
+        return
+    
+    console.print(f"\nEditing {contact['contact_type']}: {contact['contact_value']}")
+    
+    new_value = prompt_field(f"contact.{contact['contact_type']}", contact['contact_value'])
+    if new_value and new_value != contact['contact_value']:
+        update_contact(contact['id'], new_value)
+        print_success(f"Updated to: {new_value}")
+    else:
+        print_info("No changes made.")
+
+
+def _delete_contact_prompt(contacts: list):
+    """Prompt to delete a contact."""
+    from rich.prompt import Prompt, Confirm
+    
+    console.print()
+    num = Prompt.ask("Enter contact number to delete")
+    try:
+        idx = int(num) - 1
+        contact = contacts[idx]
+    except (ValueError, IndexError):
+        print_warning("Invalid selection.")
+        return
+    
+    if Confirm.ask(f"Delete {contact['contact_type']}: {contact['contact_value']}?", default=False):
+        remove_contact(contact['id'])
+        print_success("Contact deleted.")
+    else:
+        print_info("Cancelled.")
 
 
 @entity.command("delete")

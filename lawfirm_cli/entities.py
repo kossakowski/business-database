@@ -493,6 +493,240 @@ def remove_identifier(identifier_id: str, test: bool = False) -> None:
         cursor.close()
 
 
+def update_identifier(
+    identifier_id: str,
+    identifier_value: str,
+    registry_name: Optional[str] = None,
+    test: bool = False,
+) -> None:
+    """Update an identifier value.
+    
+    Args:
+        identifier_id: Identifier ID.
+        identifier_value: New value.
+        registry_name: Optional new registry name.
+        test: If True, use test database.
+    """
+    require_entity_tables(test=test)
+    
+    with transaction(test=test) as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE identifiers 
+            SET identifier_value = %s, registry_name = %s
+            WHERE id = %s
+        """, (identifier_value, registry_name, identifier_id))
+        cursor.close()
+
+
+# =============================================================================
+# Address CRUD
+# =============================================================================
+
+def add_address(
+    entity_id: str,
+    address_data: Dict[str, Any],
+    test: bool = False,
+) -> str:
+    """Add an address to an entity.
+    
+    Args:
+        entity_id: Entity ID.
+        address_data: Address fields.
+        test: If True, use test database.
+        
+    Returns:
+        Created address ID.
+    """
+    require_entity_tables(test=test)
+    
+    address_id = str(uuid4())
+    now = datetime.utcnow()
+    
+    with transaction(test=test) as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO addresses (
+                id, entity_id, address_type, country, voivodeship,
+                county, gmina, city, postal_code, post_office,
+                street, building_no, unit_no, additional_line,
+                freeform_note, created_at, updated_at
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            address_id,
+            entity_id,
+            address_data.get("address_type", "MAIN"),
+            address_data.get("country", "PL"),
+            address_data.get("voivodeship"),
+            address_data.get("county"),
+            address_data.get("gmina"),
+            address_data.get("city"),
+            address_data.get("postal_code"),
+            address_data.get("post_office"),
+            address_data.get("street"),
+            address_data.get("building_no"),
+            address_data.get("unit_no"),
+            address_data.get("additional_line"),
+            address_data.get("freeform_note"),
+            now,
+            now,
+        ))
+        cursor.close()
+        return address_id
+
+
+def update_address(
+    address_id: str,
+    address_data: Dict[str, Any],
+    test: bool = False,
+) -> None:
+    """Update an address.
+    
+    Args:
+        address_id: Address ID.
+        address_data: Fields to update.
+        test: If True, use test database.
+    """
+    require_entity_tables(test=test)
+    
+    fields = [
+        "address_type", "country", "voivodeship", "county", "gmina",
+        "city", "postal_code", "post_office", "street", "building_no",
+        "unit_no", "additional_line", "freeform_note"
+    ]
+    
+    updates = []
+    params = []
+    
+    for field in fields:
+        if field in address_data:
+            updates.append(f"{field} = %s")
+            params.append(address_data[field])
+    
+    if updates:
+        updates.append("updated_at = %s")
+        params.append(datetime.utcnow())
+        params.append(address_id)
+        
+        with transaction(test=test) as conn:
+            cursor = conn.cursor()
+            cursor.execute(f"""
+                UPDATE addresses SET {', '.join(updates)} WHERE id = %s
+            """, params)
+            cursor.close()
+
+
+def remove_address(address_id: str, test: bool = False) -> None:
+    """Remove an address.
+    
+    Args:
+        address_id: Address ID to remove.
+        test: If True, use test database.
+    """
+    require_entity_tables(test=test)
+    
+    with transaction(test=test) as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM addresses WHERE id = %s", (address_id,))
+        cursor.close()
+
+
+# =============================================================================
+# Contact CRUD
+# =============================================================================
+
+def add_contact(
+    entity_id: str,
+    contact_type: str,
+    contact_value: str,
+    label: Optional[str] = None,
+    test: bool = False,
+) -> str:
+    """Add a contact to an entity.
+    
+    Args:
+        entity_id: Entity ID.
+        contact_type: Type (EMAIL, PHONE, WEBSITE, etc.).
+        contact_value: The contact value.
+        label: Optional label.
+        test: If True, use test database.
+        
+    Returns:
+        Created contact ID.
+    """
+    require_entity_tables(test=test)
+    
+    contact_id = str(uuid4())
+    
+    with transaction(test=test) as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO contacts (
+                id, entity_id, contact_type, contact_value, label, created_at
+            ) VALUES (%s, %s, %s, %s, %s, %s)
+        """, (
+            contact_id,
+            entity_id,
+            contact_type,
+            contact_value,
+            label,
+            datetime.utcnow(),
+        ))
+        cursor.close()
+        return contact_id
+
+
+def update_contact(
+    contact_id: str,
+    contact_value: Optional[str] = None,
+    label: Optional[str] = None,
+    test: bool = False,
+) -> None:
+    """Update a contact.
+    
+    Args:
+        contact_id: Contact ID.
+        contact_value: New value.
+        label: New label.
+        test: If True, use test database.
+    """
+    require_entity_tables(test=test)
+    
+    updates = []
+    params = []
+    
+    if contact_value is not None:
+        updates.append("contact_value = %s")
+        params.append(contact_value)
+    if label is not None:
+        updates.append("label = %s")
+        params.append(label)
+    
+    if updates:
+        params.append(contact_id)
+        with transaction(test=test) as conn:
+            cursor = conn.cursor()
+            cursor.execute(f"""
+                UPDATE contacts SET {', '.join(updates)} WHERE id = %s
+            """, params)
+            cursor.close()
+
+
+def remove_contact(contact_id: str, test: bool = False) -> None:
+    """Remove a contact.
+    
+    Args:
+        contact_id: Contact ID to remove.
+        test: If True, use test database.
+    """
+    require_entity_tables(test=test)
+    
+    with transaction(test=test) as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM contacts WHERE id = %s", (contact_id,))
+        cursor.close()
+
+
 def delete_entity(entity_id: str, test: bool = False) -> Dict[str, int]:
     """Delete an entity and all related records.
     

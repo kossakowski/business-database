@@ -842,6 +842,404 @@ def status():
         print_error(f"Failed to check schema status: {e}")
 
 
+# =============================================================================
+# Interactive Menu
+# =============================================================================
+
+@cli.command("menu")
+def interactive_menu():
+    """Start interactive main menu."""
+    _run_main_menu()
+
+
+def _run_main_menu():
+    """Run the interactive main menu."""
+    from rich.panel import Panel
+    
+    # Check if tables are available
+    available, message = check_entities_available()
+    
+    while True:
+        console.print()
+        console.print(Panel(
+            "[bold]Law Firm Entity Manager[/bold]\n"
+            "[dim]Manage persons and legal entities[/dim]",
+            border_style="cyan",
+        ))
+        console.print()
+        
+        if not available:
+            console.print("[yellow]Warning: Entity tables not yet created.[/yellow]")
+            console.print("[dim]Some options may not work.[/dim]")
+            console.print()
+        
+        console.print("[bold]Main Menu[/bold]")
+        console.print()
+        console.print("  [cyan]1.[/cyan] Create new entity")
+        console.print("  [cyan]2.[/cyan] List all entities")
+        console.print("  [cyan]3.[/cyan] View entity details")
+        console.print("  [cyan]4.[/cyan] Update entity")
+        console.print("  [cyan]5.[/cyan] Delete entity")
+        console.print()
+        console.print("  [cyan]6.[/cyan] Database status")
+        console.print("  [cyan]7.[/cyan] Explore metadata")
+        console.print()
+        console.print("  [cyan]0.[/cyan] Exit")
+        console.print()
+        
+        choice = console.input("[bold]Select option (0-7):[/bold] ").strip()
+        
+        if choice == "0":
+            console.print()
+            console.print("[dim]Goodbye![/dim]")
+            break
+        elif choice == "1":
+            _menu_create_entity()
+        elif choice == "2":
+            _menu_list_entities()
+        elif choice == "3":
+            _menu_view_entity()
+        elif choice == "4":
+            _menu_update_entity()
+        elif choice == "5":
+            _menu_delete_entity()
+        elif choice == "6":
+            _menu_status()
+        elif choice == "7":
+            _menu_metadata()
+        else:
+            print_warning("Invalid option. Please enter 0-7.")
+
+
+def _menu_create_entity():
+    """Handle create entity from menu."""
+    available, message = check_entities_available()
+    if not available:
+        print_error(message)
+        return
+    
+    try:
+        console.print()
+        console.print("[bold cyan]═══ Create New Entity ═══[/bold cyan]")
+        
+        entity_type = prompt_entity_type()
+        entity_data = prompt_entity_fields(entity_type)
+        identifiers = prompt_identifiers(entity_type)
+        address = prompt_address()
+        contacts = prompt_contacts()
+        
+        console.print()
+        console.print("[bold]Summary:[/bold]")
+        console.print(f"  Type: {entity_type}")
+        console.print(f"  Label: {entity_data.get('canonical_label')}")
+        console.print(f"  Identifiers: {len(identifiers)}")
+        console.print(f"  Address: {'Yes' if address else 'No'}")
+        console.print(f"  Contacts: {len(contacts)}")
+        console.print()
+        
+        if not click.confirm("Create this entity?", default=True):
+            print_warning("Cancelled.")
+            return
+        
+        entity_id = create_entity(
+            entity_type=entity_type,
+            entity_data=entity_data,
+            identifiers=identifiers,
+            address=address,
+            contacts=contacts,
+        )
+        
+        print_success(f"Entity created successfully!")
+        console.print(f"  ID: [cyan]{entity_id}[/cyan]")
+        
+    except DuplicateIdentifierError as e:
+        print_error(f"Duplicate identifier: {e}")
+    except Exception as e:
+        print_error(f"Failed to create entity: {e}")
+
+
+def _menu_list_entities():
+    """Handle list entities from menu."""
+    available, message = check_entities_available()
+    if not available:
+        print_error(message)
+        return
+    
+    try:
+        console.print()
+        console.print("[bold cyan]═══ Entity List ═══[/bold cyan]")
+        console.print()
+        
+        # Ask for filter
+        console.print("[dim]Filter options (press Enter to skip):[/dim]")
+        search = console.input("Search by name: ").strip() or None
+        
+        entities = list_entities(search=search, limit=50)
+        
+        if not entities:
+            print_info("No entities found.")
+            return
+        
+        # Store entities for selection
+        _display_entity_list(entities)
+        
+    except Exception as e:
+        print_error(f"Failed to list entities: {e}")
+
+
+def _display_entity_list(entities: list):
+    """Display entity list with full IDs."""
+    console.print()
+    console.print(f"[bold]Found {len(entities)} entities:[/bold]")
+    console.print()
+    
+    for i, e in enumerate(entities, 1):
+        type_label = "Person" if e["entity_type"] == "PHYSICAL_PERSON" else "Legal"
+        primary_id = e.get("primary_identifier") or "—"
+        console.print(
+            f"  [cyan]{i:2}.[/cyan] [{type_label:6}] [bold]{e['canonical_label']}[/bold]"
+        )
+        console.print(f"       ID: [dim]{e['id']}[/dim]")
+        if primary_id != "—":
+            console.print(f"       Identifier: {primary_id}")
+        console.print()
+
+
+def _menu_view_entity():
+    """Handle view entity from menu."""
+    available, message = check_entities_available()
+    if not available:
+        print_error(message)
+        return
+    
+    console.print()
+    entity_id = _select_entity("view")
+    if not entity_id:
+        return
+    
+    try:
+        entity = get_entity(entity_id)
+        render_entity_detail(
+            entity=entity,
+            identifiers=entity.get("identifiers", []),
+            addresses=entity.get("addresses", []),
+            contacts=entity.get("contacts", []),
+        )
+    except EntityNotFoundError:
+        print_error(f"Entity not found: {entity_id}")
+    except Exception as e:
+        print_error(f"Failed to view entity: {e}")
+
+
+def _menu_update_entity():
+    """Handle update entity from menu."""
+    available, message = check_entities_available()
+    if not available:
+        print_error(message)
+        return
+    
+    console.print()
+    entity_id = _select_entity("update")
+    if not entity_id:
+        return
+    
+    try:
+        existing = get_entity(entity_id)
+        
+        while True:
+            console.print()
+            console.print(f"[bold cyan]═══ Update Entity: {existing['canonical_label']} ═══[/bold cyan]")
+            console.print()
+            console.print("[bold]What would you like to update?[/bold]")
+            console.print()
+            console.print("  [cyan]1.[/cyan] Core fields (name, status, notes)")
+            console.print("  [cyan]2.[/cyan] Person/Company details")
+            console.print("  [cyan]3.[/cyan] Identifiers (PESEL, NIP, KRS, etc.)")
+            console.print("  [cyan]4.[/cyan] Addresses")
+            console.print("  [cyan]5.[/cyan] Contacts (email, phone, etc.)")
+            console.print("  [cyan]0.[/cyan] Back to main menu")
+            console.print()
+            
+            choice = console.input("[bold]Select option (0-5):[/bold] ").strip()
+            
+            if choice == "0":
+                break
+            elif choice == "1":
+                _update_core_fields(entity_id, existing)
+                existing = get_entity(entity_id)
+            elif choice == "2":
+                _update_type_specific_fields(entity_id, existing)
+                existing = get_entity(entity_id)
+            elif choice == "3":
+                _manage_identifiers(entity_id, existing)
+                existing = get_entity(entity_id)
+            elif choice == "4":
+                _manage_addresses(entity_id, existing)
+                existing = get_entity(entity_id)
+            elif choice == "5":
+                _manage_contacts(entity_id, existing)
+                existing = get_entity(entity_id)
+            else:
+                print_warning("Invalid option.")
+                
+    except EntityNotFoundError:
+        print_error(f"Entity not found: {entity_id}")
+    except Exception as e:
+        print_error(f"Failed to update entity: {e}")
+
+
+def _menu_delete_entity():
+    """Handle delete entity from menu."""
+    available, message = check_entities_available()
+    if not available:
+        print_error(message)
+        return
+    
+    console.print()
+    entity_id = _select_entity("delete")
+    if not entity_id:
+        return
+    
+    try:
+        entity = get_entity(entity_id)
+        related_counts = get_related_counts(entity_id)
+        
+        if not prompt_delete_confirmation(entity["canonical_label"], related_counts):
+            print_warning("Cancelled.")
+            return
+        
+        deleted = delete_entity(entity_id)
+        
+        print_success(f"Entity deleted: {entity['canonical_label']}")
+        console.print(f"  Deleted {deleted['identifiers']} identifier(s)")
+        console.print(f"  Deleted {deleted['addresses']} address(es)")
+        console.print(f"  Deleted {deleted['contacts']} contact(s)")
+        
+    except EntityNotFoundError:
+        print_error(f"Entity not found: {entity_id}")
+    except Exception as e:
+        print_error(f"Failed to delete entity: {e}")
+
+
+def _select_entity(action: str) -> str:
+    """Helper to select an entity by listing and choosing."""
+    from rich.prompt import Prompt
+    
+    console.print(f"[bold cyan]═══ Select Entity to {action.title()} ═══[/bold cyan]")
+    console.print()
+    console.print("[dim]Enter entity ID directly, or search first:[/dim]")
+    console.print()
+    console.print("  [cyan]S.[/cyan] Search entities")
+    console.print("  [cyan]L.[/cyan] List recent entities")
+    console.print("  [cyan]I.[/cyan] Enter ID directly")
+    console.print("  [cyan]0.[/cyan] Cancel")
+    console.print()
+    
+    choice = console.input("[bold]Select option:[/bold] ").strip().upper()
+    
+    if choice == "0":
+        return None
+    elif choice == "S":
+        search = Prompt.ask("Search term")
+        entities = list_entities(search=search, limit=20)
+        if not entities:
+            print_info("No entities found.")
+            return None
+        return _pick_from_list(entities)
+    elif choice == "L":
+        entities = list_entities(limit=10)
+        if not entities:
+            print_info("No entities found.")
+            return None
+        return _pick_from_list(entities)
+    elif choice == "I":
+        return Prompt.ask("Enter entity ID")
+    else:
+        # Assume they entered an ID directly
+        return choice
+
+
+def _pick_from_list(entities: list) -> str:
+    """Pick an entity from a displayed list."""
+    from rich.prompt import Prompt
+    
+    _display_entity_list(entities)
+    
+    num = Prompt.ask("Enter number to select (or 0 to cancel)")
+    
+    if num == "0":
+        return None
+    
+    try:
+        idx = int(num) - 1
+        return entities[idx]["id"]
+    except (ValueError, IndexError):
+        print_warning("Invalid selection.")
+        return None
+
+
+def _menu_status():
+    """Show database status."""
+    try:
+        schema_status = get_schema_status()
+        render_schema_status(schema_status)
+    except Exception as e:
+        print_error(f"Failed to check schema status: {e}")
+
+
+def _menu_metadata():
+    """Metadata exploration submenu."""
+    while True:
+        console.print()
+        console.print("[bold cyan]═══ Metadata Explorer ═══[/bold cyan]")
+        console.print()
+        console.print("  [cyan]1.[/cyan] List all field definitions")
+        console.print("  [cyan]2.[/cyan] List enum keys")
+        console.print("  [cyan]3.[/cyan] View enum values")
+        console.print("  [cyan]4.[/cyan] View field details")
+        console.print("  [cyan]0.[/cyan] Back to main menu")
+        console.print()
+        
+        choice = console.input("[bold]Select option:[/bold] ").strip()
+        
+        if choice == "0":
+            break
+        elif choice == "1":
+            fields = load_all_field_metadata()
+            field_list = sorted(fields.values(), key=lambda f: (f.display_group, f.display_order))
+            render_field_list(field_list, title="All Field Metadata")
+        elif choice == "2":
+            keys = get_all_enum_keys()
+            console.print()
+            console.print("[bold]Available Enum Keys:[/bold]")
+            for key in keys:
+                options = get_enum_options(key)
+                console.print(f"  • [cyan]{key}[/cyan] ({len(options)} options)")
+        elif choice == "3":
+            from rich.prompt import Prompt
+            enum_key = Prompt.ask("Enter enum key (e.g., entity_type, legal_kind)")
+            options = get_enum_options(enum_key)
+            if options:
+                render_enum_options(options, enum_key)
+            else:
+                print_warning(f"No options found for: {enum_key}")
+        elif choice == "4":
+            from rich.prompt import Prompt
+            field_key = Prompt.ask("Enter field key (e.g., entity.entity_type, id.PESEL)")
+            field = get_field_metadata(field_key)
+            if field:
+                console.print()
+                console.print(f"[bold cyan]Field: {field.field_key}[/bold cyan]")
+                console.print(f"  Label: {field.label_pl}")
+                console.print(f"  Tooltip: {field.tooltip_pl or '—'}")
+                console.print(f"  Type: {field.input_type}")
+                console.print(f"  Editable: {'Yes' if field.is_user_editable else 'No'}")
+            else:
+                print_warning(f"Field not found: {field_key}")
+        else:
+            print_warning("Invalid option.")
+
+
 def main():
     """Main entry point."""
     cli()

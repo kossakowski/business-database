@@ -1,0 +1,80 @@
+{
+  "odpis": {
+    "napierszyNumerKRS": "0000012345",
+    "rodzaj": "Przedsiebiorca",
+    "dataOstModyfikacji": "2024-01-15T10:30:00Z",
+    "dane": {
+      "dzial1": {
+        "danePodmiotu": {
+          "identyfikatory": {
+            "krs": "0000012345",
+            "nip": "1234567890",
+            "regon": "123456789"
+          },
+          "nazwa": "TEST SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+          "nazwaSkrocona": "TEST SP. Z O.O.",
+          "formaPrawna": "SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+          "kodFormyPrawnej": "117",
+          "status": "AKTYWNY",
+          "dataRejestracjiWKRS": "2020-06-15"
+        },
+        "siedzibaIAdres": {
+          "adres": {
+            "kraj": "POLSKA",
+            "wojewodztwo": "MAZOWIECKIE",
+            "powiat": "M.ST. WARSZAWA",
+            "gmina": "M.ST. WARSZAWA",
+            "miejscowosc": "WARSZAWA",
+            "kodPocztowy": "00-001",
+            "poczta": "WARSZAWA",
+            "ulica": "NOWY ŚWIAT",
+            "nrDomu": "15",
+            "nrLokalu": "3"
+          },
+          "adresEmail": "kontakt@test-spolka.pl",
+          "adresStronyInternetowej": "https://www.test-spolka.pl",
+          "telefon": "+48221234567"
+        },
+        "kapital": {
+          "wysokoscKapitaluZakladowego": "50000.00 PLN"
+        }
+      },
+      "dzial2": {
+        "reprezentacja": {
+          "skladOrganu": [
+            {
+              "imiona": "JAN",
+              "nazwisko": "KOWALSKI",
+              "funkcjaWOrganie": "PREZES ZARZĄDU",
+              "identyfikator": {
+                "pesel": "80010112345"
+              }
+            },
+            {
+              "imiona": "ANNA",
+              "nazwisko": "NOWAK",
+              "funkcjaWOrganie": "CZŁONEK ZARZĄDU",
+              "identyfikator": {
+                "pesel": "85020223456"
+              }
+            }
+          ]
+        }
+      },
+      "dzial3": {
+        "przedmiotDzialalnosci": {
+          "przedmiotPrzewazajacejDzialalnosci": [
+            {
+              "kodDzial": "62.01.Z",
+              "opis": "DZIAŁALNOŚĆ ZWIĄZANA Z OPROGRAMOWANIEM"
+            },
+            {
+              "kodDzial": "62.02.Z",
+              "opis": "DZIAŁALNOŚĆ ZWIĄZANA Z DORADZTWEM W ZAKRESIE INFORMATYKI"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

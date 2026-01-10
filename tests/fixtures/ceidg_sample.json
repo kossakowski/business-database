@@ -1,0 +1,67 @@
+{
+  "id": "ceidg-unique-id-12345",
+  "identyfikatorWpisu": "CEIDG-12345",
+  "nip": "9876543210",
+  "regon": "987654321",
+  "wlasciciel": {
+    "imie": "MARIA",
+    "nazwisko": "WIŚNIEWSKA",
+    "nip": "9876543210"
+  },
+  "firma": "MARIA WIŚNIEWSKA USŁUGI INFORMATYCZNE",
+  "status": "AKTYWNY",
+  "dataRozpoczeciaDzialalnosci": "2019-03-01",
+  "dataZakonczeniaDzialalnosci": null,
+  "dataZawieszeniaDzialalnosci": null,
+  "dataWznowieniaDzialalnosci": null,
+  "adresDzialalnosci": {
+    "kraj": "POLSKA",
+    "wojewodztwo": "WIELKOPOLSKIE",
+    "powiat": "M. POZNAŃ",
+    "gmina": "POZNAŃ",
+    "miejscowosc": "POZNAŃ",
+    "kodPocztowy": "60-001",
+    "poczta": "POZNAŃ",
+    "ulica": "ŚWIĘTY MARCIN",
+    "budynek": "42",
+    "lokal": "5"
+  },
+  "adresDoKorespondencji": {
+    "kraj": "POLSKA",
+    "wojewodztwo": "WIELKOPOLSKIE",
+    "powiat": "M. POZNAŃ",
+    "gmina": "POZNAŃ",
+    "miejscowosc": "POZNAŃ",
+    "kodPocztowy": "60-002",
+    "poczta": "POZNAŃ",
+    "ulica": "PÓŁWIEJSKA",
+    "budynek": "10",
+    "lokal": null
+  },
+  "dodatkoweMiejscaWykonywaniaDzialalnosci": [
+    {
+      "kraj": "POLSKA",
+      "miejscowosc": "WROCŁAW",
+      "kodPocztowy": "50-001",
+      "ulica": "RYNEK",
+      "budynek": "1"
+    }
+  ],
+  "kontakt": {
+    "email": "maria@uslugi-it.pl",
+    "stronaWww": "https://www.uslugi-it.pl",
+    "telefon": "+48601234567"
+  },
+  "pkd": [
+    {
+      "kod": "62.01.Z",
+      "opis": "Działalność związana z oprogramowaniem",
+      "przewazajace": true
+    },
+    {
+      "kod": "62.09.Z",
+      "opis": "Pozostała działalność usługowa w zakresie technologii informatycznych i komputerowych",
+      "przewazajace": false
+    }
+  ]
+}

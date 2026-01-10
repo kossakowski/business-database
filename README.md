@@ -212,6 +212,10 @@ pytest tests/test_metadata.py -v
 - `test_schema.py` - Tests for schema detection and table existence checks  
 - `test_entities.py` - Tests for entity CRUD operations (some skipped until tables exist)
 - `test_cli.py` - Integration tests for CLI commands
+- `test_registry_normalization.py` - Tests for KRS/CEIDG response parsing
+- `test_registry_proposals.py` - Tests for diff/proposal generation logic
+- `test_registry_storage.py` - Tests for snapshot and profile storage
+- `test_registry_cli.py` - Tests for registry CLI commands (mocked HTTP)
 
 ---
 
@@ -228,13 +232,28 @@ business-database/
 │   ├── metadata.py      # Load tooltips/enums from meta tables
 │   ├── entities.py      # Entity CRUD operations
 │   ├── prompts.py       # Tooltip-driven input prompts
-│   └── render.py        # Terminal output formatting
+│   ├── render.py        # Terminal output formatting
+│   └── registry/        # Registry integration module
+│       ├── __init__.py
+│       ├── models.py        # Data models (profiles, proposals)
+│       ├── krs_client.py    # KRS API client
+│       ├── ceidg_client.py  # CEIDG API client
+│       ├── proposals.py     # Diff/proposal generation
+│       ├── storage.py       # Snapshot & profile DB storage
+│       └── ui.py            # Registry-specific UI rendering
 ├── tests/
-│   ├── conftest.py      # Pytest fixtures
+│   ├── fixtures/
+│   │   ├── krs_sample.json      # Sample KRS response
+│   │   └── ceidg_sample.json    # Sample CEIDG response
+│   ├── conftest.py              # Pytest fixtures
 │   ├── test_metadata.py
 │   ├── test_schema.py
 │   ├── test_entities.py
-│   └── test_cli.py
+│   ├── test_cli.py
+│   ├── test_registry_normalization.py  # KRS/CEIDG parsing tests
+│   ├── test_registry_proposals.py      # Proposal diff logic tests
+│   ├── test_registry_storage.py        # Snapshot storage tests
+│   └── test_registry_cli.py            # CLI command tests
 ├── db/
 │   └── schema.sql       # Schema dump (source of truth)
 ├── docker-compose.yml
@@ -269,3 +288,133 @@ When entity tables don't exist yet, the CLI:
 - Transactions ensure all-or-nothing creation
 - Delete requires explicit confirmation
 - Unique constraints show user-friendly errors
+
+---
+
+## Registry Integration (KRS & CEIDG)
+
+The CLI supports enriching entity data from Polish public registries:
+
+- **KRS** (Krajowy Rejestr Sądowy) - National Court Register for legal entities
+- **CEIDG** (Centralna Ewidencja i Informacja o Działalności Gospodarczej) - Central Register for sole proprietorships
+
+### Features
+
+- **Fetch official data**: Retrieve company/person data from registries
+- **Human-in-the-loop**: Review proposed changes before applying
+- **No silent overwrites**: Existing data is preserved; registry data proposed as additions
+- **Provenance**: Raw registry responses stored as immutable snapshots
+- **Resilient**: Graceful error handling for network issues and API downtime
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `KRS_API_BASE_URL` | KRS API base URL | `https://api-krs.ms.gov.pl/api/krs` |
+| `KRS_REQUEST_TIMEOUT` | Request timeout (seconds) | `30` |
+| `CEIDG_API_TOKEN` | CEIDG API token (**required** for CEIDG) | - |
+| `CEIDG_API_BASE_URL` | CEIDG API base URL | `https://dane.biznes.gov.pl/api/ceidg/v2` |
+| `CEIDG_REQUEST_TIMEOUT` | Request timeout (seconds) | `30` |
+
+### Getting a CEIDG API Token
+
+1. Go to https://dane.biznes.gov.pl
+2. Create an account and log in
+3. Navigate to API access section
+4. Generate an API token
+5. Add to your `.env` file:
+   ```
+   CEIDG_API_TOKEN=your_token_here
+   ```
+
+### Initialize Registry Tables
+
+Before using registry features, create the required tables:
+
+```bash
+python -m lawfirm_cli.main registry init-schema
+```
+
+This creates:
+- `registry_snapshots` - Stores raw registry responses
+- `registry_profiles_krs` - Normalized KRS data per entity
+- `registry_profiles_ceidg` - Normalized CEIDG data per entity
+- `affiliations` - Entity relationships (future use)
+
+### Check Registry Status
+
+```bash
+python -m lawfirm_cli.main registry status
+```
+
+Shows table existence and configuration status.
+
+### Enrich Entity Data
+
+#### Interactive Mode (via update menu)
+
+```bash
+python -m lawfirm_cli.main entity update <entity-id>
+# Then select option 6: Registry enrichment (KRS/CEIDG)
+```
+
+#### Non-Interactive Mode
+
+**By KRS number:**
+```bash
+python -m lawfirm_cli.main entity enrich <entity-id> --source krs --krs 0000012345
+```
+
+**By NIP (CEIDG):**
+```bash
+python -m lawfirm_cli.main entity enrich <entity-id> --source ceidg --nip 1234567890
+```
+
+**By REGON (CEIDG):**
+```bash
+python -m lawfirm_cli.main entity enrich <entity-id> --source ceidg --regon 123456789
+```
+
+**Auto-apply safe additions:**
+```bash
+python -m lawfirm_cli.main entity enrich <entity-id> --apply-all
+```
+
+### What Gets Enriched
+
+| Data Type | KRS | CEIDG |
+|-----------|-----|-------|
+| KRS number | ✓ | - |
+| NIP | ✓ | ✓ |
+| REGON | ✓ | ✓ |
+| Company/Business name | ✓ | ✓ |
+| Person name | - | ✓ |
+| Seat/Main address | ✓ | ✓ |
+| Correspondence address | ✓ | ✓ |
+| Email | ✓ | ✓ |
+| Website | ✓ | ✓ |
+| Phone | ✓ | ✓ |
+| PKD codes | ✓ | ✓ |
+| Representatives | ✓ | - |
+| Legal form | ✓ | - |
+
+### Proposal Behavior
+
+1. **Adding missing data**: Identifiers, contacts, and addresses not present on the entity are proposed for addition
+2. **No silent overwrites**: Existing data is never overwritten without explicit user confirmation
+3. **Collision detection**: If an identifier already exists on another entity, a warning is shown
+4. **Name mismatches**: If registry name differs from entity name, a warning is shown
+
+### API Reference
+
+**KRS (eKRS Open API)**
+- Endpoint: `https://api-krs.ms.gov.pl/api/krs/OdpisPelny/{krs}?rejestr=P&format=json`
+- Authentication: None (public API)
+- Rate limiting: None documented
+- Documentation: https://ekrs.ms.gov.pl
+
+**CEIDG (API v2)**
+- Endpoint: `https://dane.biznes.gov.pl/api/ceidg/v2/firmy`
+- Authentication: Bearer token
+- Rate limiting: Subject to terms of service
+- Documentation: https://dane.biznes.gov.pl/dokumentacja

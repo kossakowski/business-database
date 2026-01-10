@@ -54,6 +54,42 @@ from lawfirm_cli.render import (
     render_entity_detail,
     render_schema_status,
 )
+from lawfirm_cli.registry.storage import (
+    check_registry_tables_exist,
+    create_registry_tables,
+    insert_snapshot,
+    upsert_krs_profile,
+    upsert_ceidg_profile,
+)
+from lawfirm_cli.registry.krs_client import (
+    fetch_and_normalize_krs,
+    KRSClientError,
+    KRSNotFoundError,
+    KRSConnectionError,
+)
+from lawfirm_cli.registry.ceidg_client import (
+    fetch_and_normalize_ceidg_by_nip,
+    fetch_and_normalize_ceidg_by_regon,
+    is_ceidg_configured,
+    CEIDGClientError,
+    CEIDGNotFoundError,
+    CEIDGNotConfiguredError,
+)
+from lawfirm_cli.registry.proposals import (
+    generate_krs_proposal,
+    generate_ceidg_proposal,
+)
+from lawfirm_cli.registry.ui import (
+    render_proposal_summary,
+    prompt_apply_proposal,
+    render_apply_result,
+    prompt_lookup_key,
+    render_profile_summary,
+    print_registry_info,
+    print_registry_error,
+    print_registry_success,
+)
+from lawfirm_cli.registry.models import ProposalAction
 
 
 @click.group()
@@ -229,10 +265,11 @@ def entity_update(entity_id):
             console.print("  [cyan]3.[/cyan] Identifiers (PESEL, NIP, KRS, etc.)")
             console.print("  [cyan]4.[/cyan] Addresses")
             console.print("  [cyan]5.[/cyan] Contacts (email, phone, etc.)")
+            console.print("  [cyan]6.[/cyan] Registry enrichment (KRS/CEIDG)")
             console.print("  [cyan]0.[/cyan] Done - exit")
             console.print()
             
-            choice = console.input("[bold]Select option (0-5):[/bold] ").strip()
+            choice = console.input("[bold]Select option (0-6):[/bold] ").strip()
             
             if choice == "0":
                 print_info("Update complete.")
@@ -252,8 +289,11 @@ def entity_update(entity_id):
             elif choice == "5":
                 _manage_contacts(entity_id, existing)
                 existing = get_entity(entity_id)  # Refresh
+            elif choice == "6":
+                _registry_enrichment(entity_id, existing)
+                existing = get_entity(entity_id)  # Refresh
             else:
-                print_warning("Invalid option. Please enter 0-5.")
+                print_warning("Invalid option. Please enter 0-6.")
         
     except EntityNotFoundError:
         print_error(f"Entity not found: {entity_id}")
@@ -684,6 +724,180 @@ def _delete_contact_prompt(contacts: list):
         print_info("Cancelled.")
 
 
+def _registry_enrichment(entity_id: str, existing: dict):
+    """Handle registry enrichment for an entity."""
+    console.print()
+    console.print("[bold magenta]── Registry Enrichment ──[/bold magenta]")
+    
+    # Check if registry tables exist
+    reg_tables = check_registry_tables_exist()
+    if not reg_tables.get("registry_snapshots"):
+        console.print()
+        print_warning("Registry tables not initialized.")
+        console.print("[dim]Run: lawfirm-cli registry init-schema[/dim]")
+        return
+    
+    # Get lookup key from user
+    source, lookup_key = prompt_lookup_key(
+        existing["entity_type"],
+        existing.get("identifiers", []),
+    )
+    
+    if not source or not lookup_key:
+        print_info("Cancelled.")
+        return
+    
+    # Fetch data from registry
+    console.print()
+    print_registry_info(f"Fetching data from {source}...")
+    
+    try:
+        if source == "KRS":
+            profile, snapshot = fetch_and_normalize_krs(lookup_key, entity_id)
+            render_profile_summary("KRS", profile)
+            proposal = generate_krs_proposal(existing, profile)
+        else:  # CEIDG
+            if not is_ceidg_configured():
+                print_registry_error(
+                    "CEIDG not configured. Set CEIDG_API_TOKEN environment variable."
+                )
+                return
+            
+            if lookup_key.startswith("NIP:"):
+                nip = lookup_key.split(":", 1)[1]
+                profile, snapshot = fetch_and_normalize_ceidg_by_nip(nip, entity_id)
+            elif lookup_key.startswith("REGON:"):
+                regon = lookup_key.split(":", 1)[1]
+                profile, snapshot = fetch_and_normalize_ceidg_by_regon(regon, entity_id)
+            else:
+                print_registry_error(f"Invalid lookup key format: {lookup_key}")
+                return
+            
+            render_profile_summary("CEIDG", profile)
+            proposal = generate_ceidg_proposal(existing, profile)
+        
+        # Store snapshot first
+        snapshot_id = insert_snapshot(snapshot)
+        proposal.snapshot_id = snapshot_id
+        print_registry_info(f"Snapshot stored (ID: {snapshot_id[:8]}...)")
+        
+        # Show proposal
+        render_proposal_summary(proposal)
+        
+        if not proposal.has_any_proposals():
+            return
+        
+        # Get user selections
+        selections = prompt_apply_proposal(proposal)
+        
+        # Apply selected changes
+        applied, errors = _apply_enrichment_selections(entity_id, proposal, selections)
+        
+        # Store profile if changes were applied
+        if sum(applied.values()) > 0:
+            if source == "KRS":
+                upsert_krs_profile(entity_id, profile, snapshot_id)
+            else:
+                upsert_ceidg_profile(entity_id, profile, snapshot_id)
+        
+        render_apply_result(applied, errors)
+        
+    except KRSNotFoundError as e:
+        print_registry_error(f"Not found in KRS: {e}")
+    except KRSConnectionError as e:
+        print_registry_error(f"Connection error: {e}")
+    except KRSClientError as e:
+        print_registry_error(f"KRS API error: {e}")
+    except CEIDGNotFoundError as e:
+        print_registry_error(f"Not found in CEIDG: {e}")
+    except CEIDGNotConfiguredError as e:
+        print_registry_error(str(e))
+    except CEIDGClientError as e:
+        print_registry_error(f"CEIDG API error: {e}")
+    except Exception as e:
+        print_registry_error(f"Unexpected error: {e}")
+
+
+def _apply_enrichment_selections(
+    entity_id: str,
+    proposal,
+    selections: dict,
+) -> tuple:
+    """Apply selected enrichment proposals.
+    
+    Returns:
+        Tuple of (applied_counts_dict, errors_list).
+    """
+    applied = {
+        "core": 0,
+        "type_specific": 0,
+        "identifiers": 0,
+        "contacts": 0,
+        "addresses": 0,
+    }
+    errors = []
+    
+    # Apply core updates
+    if selections.get("apply_core") and proposal.core_updates:
+        try:
+            update_entity(entity_id, proposal.core_updates)
+            applied["core"] = len(proposal.core_updates)
+        except Exception as e:
+            errors.append(f"Core update failed: {e}")
+    
+    # Apply type-specific updates
+    if selections.get("apply_type_specific") and proposal.type_specific_updates:
+        try:
+            update_entity(entity_id, proposal.type_specific_updates)
+            applied["type_specific"] = len(proposal.type_specific_updates)
+        except Exception as e:
+            errors.append(f"Type-specific update failed: {e}")
+    
+    # Apply identifiers
+    for ident_proposal in selections.get("identifiers", []):
+        if ident_proposal.action == ProposalAction.ADD:
+            try:
+                add_identifier(
+                    entity_id,
+                    ident_proposal.identifier_type,
+                    ident_proposal.identifier_value,
+                    ident_proposal.registry_name,
+                )
+                applied["identifiers"] += 1
+            except DuplicateIdentifierError:
+                errors.append(
+                    f"Duplicate {ident_proposal.identifier_type}: {ident_proposal.identifier_value}"
+                )
+            except Exception as e:
+                errors.append(f"Identifier add failed: {e}")
+    
+    # Apply contacts
+    for contact_proposal in selections.get("contacts", []):
+        try:
+            add_contact(
+                entity_id,
+                contact_proposal.contact_type,
+                contact_proposal.contact_value,
+                contact_proposal.label,
+            )
+            applied["contacts"] += 1
+        except Exception as e:
+            errors.append(f"Contact add failed: {e}")
+    
+    # Apply addresses
+    for addr_proposal in selections.get("addresses", []):
+        try:
+            if addr_proposal.action == ProposalAction.ADD:
+                add_address(entity_id, addr_proposal.address.to_dict())
+            elif addr_proposal.action == ProposalAction.UPDATE:
+                update_address(addr_proposal.existing_address_id, addr_proposal.address.to_dict())
+            applied["addresses"] += 1
+        except Exception as e:
+            errors.append(f"Address operation failed: {e}")
+    
+    return applied, errors
+
+
 @entity.command("delete")
 @click.argument("entity_id")
 def entity_delete(entity_id):
@@ -838,8 +1052,268 @@ def status():
     try:
         schema_status = get_schema_status()
         render_schema_status(schema_status)
+        
+        # Also show registry tables status
+        console.print()
+        console.print("[cyan]Registry Tables (Optional):[/cyan]")
+        reg_tables = check_registry_tables_exist()
+        for table, exists in reg_tables.items():
+            icon = "[green]✓[/green]" if exists else "[dim]○[/dim]"
+            console.print(f"  {icon} public.{table}")
+        
+        if not all(reg_tables.values()):
+            console.print()
+            console.print("[dim]Run: lawfirm-cli registry init-schema to create registry tables[/dim]")
+            
     except Exception as e:
         print_error(f"Failed to check schema status: {e}")
+
+
+# =============================================================================
+# Registry Commands
+# =============================================================================
+
+@cli.group()
+def registry():
+    """Registry integration commands (KRS, CEIDG)."""
+    pass
+
+
+@registry.command("init-schema")
+def registry_init_schema():
+    """Create registry tables (idempotent).
+    
+    Creates the following tables if they don't exist:
+    - registry_snapshots (stores raw registry responses)
+    - registry_profiles_krs (normalized KRS data)
+    - registry_profiles_ceidg (normalized CEIDG data)
+    - affiliations (entity relationships from registries)
+    """
+    try:
+        console.print()
+        print_info("Creating registry tables...")
+        
+        created = create_registry_tables()
+        
+        if created:
+            print_success(f"Created tables: {', '.join(created)}")
+        else:
+            print_info("All registry tables already exist.")
+        
+        # Show current status
+        reg_tables = check_registry_tables_exist()
+        console.print()
+        console.print("[bold]Registry Tables Status:[/bold]")
+        for table, exists in reg_tables.items():
+            icon = "[green]✓[/green]" if exists else "[red]✗[/red]"
+            console.print(f"  {icon} public.{table}")
+            
+    except Exception as e:
+        print_error(f"Failed to create registry tables: {e}")
+
+
+@registry.command("status")
+def registry_status():
+    """Show registry integration status."""
+    try:
+        console.print()
+        console.print("[bold cyan]═══ Registry Integration Status ═══[/bold cyan]")
+        console.print()
+        
+        # Tables
+        reg_tables = check_registry_tables_exist()
+        console.print("[bold]Tables:[/bold]")
+        for table, exists in reg_tables.items():
+            icon = "[green]✓[/green]" if exists else "[red]✗[/red]"
+            console.print(f"  {icon} public.{table}")
+        
+        console.print()
+        
+        # Configuration
+        console.print("[bold]Configuration:[/bold]")
+        
+        import os
+        krs_url = os.environ.get("KRS_API_BASE_URL", "(default)")
+        console.print(f"  KRS_API_BASE_URL: {krs_url}")
+        
+        ceidg_configured = is_ceidg_configured()
+        ceidg_icon = "[green]✓[/green]" if ceidg_configured else "[yellow]○[/yellow]"
+        console.print(f"  {ceidg_icon} CEIDG_API_TOKEN: {'configured' if ceidg_configured else 'not set'}")
+        
+        console.print()
+        
+        if not all(reg_tables.values()):
+            console.print("[dim]Run: lawfirm-cli registry init-schema[/dim]")
+        if not ceidg_configured:
+            console.print("[dim]Set CEIDG_API_TOKEN to enable CEIDG integration[/dim]")
+            
+    except Exception as e:
+        print_error(f"Failed to check registry status: {e}")
+
+
+@entity.command("enrich")
+@click.argument("entity_id")
+@click.option("--source", "-s", type=click.Choice(["krs", "ceidg"]), 
+              help="Registry source to use")
+@click.option("--krs", "krs_number", help="KRS number for lookup")
+@click.option("--nip", "nip_number", help="NIP number for lookup")
+@click.option("--regon", "regon_number", help="REGON number for lookup")
+@click.option("--apply-all", is_flag=True, 
+              help="Apply all safe additions without prompting")
+def entity_enrich(entity_id, source, krs_number, nip_number, regon_number, apply_all):
+    """Enrich entity with registry data (KRS/CEIDG).
+    
+    Fetches data from public registries and proposes updates to the entity.
+    By default, shows proposals and asks for confirmation before applying.
+    
+    Examples:
+    
+        # Interactive mode with auto-detected source
+        lawfirm-cli entity enrich <entity_id>
+        
+        # Lookup by KRS number
+        lawfirm-cli entity enrich <entity_id> --source krs --krs 0000123456
+        
+        # Lookup by NIP in CEIDG
+        lawfirm-cli entity enrich <entity_id> --source ceidg --nip 1234567890
+        
+        # Apply all safe additions automatically
+        lawfirm-cli entity enrich <entity_id> --apply-all
+    """
+    available, message = check_entities_available()
+    if not available:
+        print_error(message)
+        return
+    
+    # Check registry tables
+    reg_tables = check_registry_tables_exist()
+    if not reg_tables.get("registry_snapshots"):
+        print_error("Registry tables not initialized.")
+        console.print("[dim]Run: lawfirm-cli registry init-schema[/dim]")
+        return
+    
+    try:
+        entity = get_entity(entity_id)
+    except EntityNotFoundError:
+        print_error(f"Entity not found: {entity_id}")
+        return
+    except Exception as e:
+        print_error(f"Failed to get entity: {e}")
+        return
+    
+    entity_type = entity["entity_type"]
+    identifiers = entity.get("identifiers", [])
+    
+    # Determine source and lookup key
+    if not source:
+        # Auto-detect based on entity type
+        source = "krs" if entity_type == "LEGAL_PERSON" else "ceidg"
+    
+    lookup_key = None
+    if source == "krs":
+        if krs_number:
+            lookup_key = krs_number
+        else:
+            # Try to find KRS in existing identifiers
+            for ident in identifiers:
+                if ident.get("identifier_type") == "KRS":
+                    lookup_key = ident.get("identifier_value")
+                    break
+    else:  # ceidg
+        if nip_number:
+            lookup_key = f"NIP:{nip_number}"
+        elif regon_number:
+            lookup_key = f"REGON:{regon_number}"
+        else:
+            # Try to find NIP/REGON in existing identifiers
+            for ident in identifiers:
+                if ident.get("identifier_type") == "NIP":
+                    lookup_key = f"NIP:{ident.get('identifier_value')}"
+                    break
+                elif ident.get("identifier_type") == "REGON":
+                    lookup_key = f"REGON:{ident.get('identifier_value')}"
+                    break
+    
+    if not lookup_key:
+        print_error(f"No lookup key provided or found. Use --{source.lower()} or --nip/--regon option.")
+        return
+    
+    # Perform enrichment
+    console.print()
+    print_info(f"Enriching entity: {entity['canonical_label']}")
+    print_info(f"Source: {source.upper()}, Lookup: {lookup_key}")
+    console.print()
+    
+    try:
+        if source == "krs":
+            profile, snapshot = fetch_and_normalize_krs(lookup_key, entity_id)
+            render_profile_summary("KRS", profile)
+            proposal = generate_krs_proposal(entity, profile)
+        else:
+            if not is_ceidg_configured():
+                print_error("CEIDG not configured. Set CEIDG_API_TOKEN environment variable.")
+                return
+            
+            if lookup_key.startswith("NIP:"):
+                nip = lookup_key.split(":", 1)[1]
+                profile, snapshot = fetch_and_normalize_ceidg_by_nip(nip, entity_id)
+            else:
+                regon = lookup_key.split(":", 1)[1]
+                profile, snapshot = fetch_and_normalize_ceidg_by_regon(regon, entity_id)
+            
+            render_profile_summary("CEIDG", profile)
+            proposal = generate_ceidg_proposal(entity, profile)
+        
+        # Store snapshot
+        snapshot_id = insert_snapshot(snapshot)
+        proposal.snapshot_id = snapshot_id
+        print_info(f"Snapshot stored (ID: {snapshot_id[:8]}...)")
+        
+        # Show proposal
+        render_proposal_summary(proposal)
+        
+        if not proposal.has_any_proposals():
+            return
+        
+        # Get selections
+        if apply_all:
+            # Auto-select safe additions
+            selections = {
+                "apply_core": bool(proposal.core_updates),
+                "apply_type_specific": bool(proposal.type_specific_updates),
+                "identifiers": [i for i in proposal.identifiers_to_add if i.action == ProposalAction.ADD],
+                "contacts": proposal.contacts_to_add,
+                "addresses": [a for a in proposal.address_proposals if a.action == ProposalAction.ADD],
+            }
+            console.print()
+            print_info("Applying all safe additions (--apply-all mode)...")
+        else:
+            selections = prompt_apply_proposal(proposal)
+        
+        # Apply
+        applied, errors = _apply_enrichment_selections(entity_id, proposal, selections)
+        
+        # Store profile
+        if sum(applied.values()) > 0:
+            if source == "krs":
+                upsert_krs_profile(entity_id, profile, snapshot_id)
+            else:
+                upsert_ceidg_profile(entity_id, profile, snapshot_id)
+        
+        render_apply_result(applied, errors)
+        
+    except KRSNotFoundError as e:
+        print_error(f"Not found in KRS: {e}")
+    except KRSConnectionError as e:
+        print_error(f"Connection error: {e}")
+    except KRSClientError as e:
+        print_error(f"KRS API error: {e}")
+    except CEIDGNotFoundError as e:
+        print_error(f"Not found in CEIDG: {e}")
+    except CEIDGNotConfiguredError as e:
+        print_error(str(e))
+    except CEIDGClientError as e:
+        print_error(f"CEIDG API error: {e}")
 
 
 # =============================================================================
@@ -1057,10 +1531,11 @@ def _menu_update_entity():
             console.print("  [cyan]3.[/cyan] Identifiers (PESEL, NIP, KRS, etc.)")
             console.print("  [cyan]4.[/cyan] Addresses")
             console.print("  [cyan]5.[/cyan] Contacts (email, phone, etc.)")
+            console.print("  [cyan]6.[/cyan] Registry enrichment (KRS/CEIDG)")
             console.print("  [cyan]0.[/cyan] Back to main menu")
             console.print()
             
-            choice = console.input("[bold]Select option (0-5):[/bold] ").strip()
+            choice = console.input("[bold]Select option (0-6):[/bold] ").strip()
             
             if choice == "0":
                 break
@@ -1078,6 +1553,9 @@ def _menu_update_entity():
                 existing = get_entity(entity_id)
             elif choice == "5":
                 _manage_contacts(entity_id, existing)
+                existing = get_entity(entity_id)
+            elif choice == "6":
+                _registry_enrichment(entity_id, existing)
                 existing = get_entity(entity_id)
             else:
                 print_warning("Invalid option.")

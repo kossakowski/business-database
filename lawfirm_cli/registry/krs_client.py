@@ -135,9 +135,19 @@ def fetch_krs_data(krs_number: str) -> Tuple[Dict[str, Any], str]:
         raise KRSParseError(f"Failed to parse KRS API response: {e}")
 
 
-def _extract_address(addr_data: Optional[Dict]) -> Optional[NormalizedAddress]:
+def _extract_address(addr_data: Any) -> Optional[NormalizedAddress]:
     """Extract address from KRS address structure."""
     if not addr_data:
+        return None
+    
+    # Handle case where addr_data is a list
+    if isinstance(addr_data, list):
+        if len(addr_data) > 0 and isinstance(addr_data[0], dict):
+            addr_data = addr_data[0]
+        else:
+            return None
+    
+    if not isinstance(addr_data, dict):
         return None
     
     return NormalizedAddress(
@@ -166,6 +176,32 @@ def _parse_date(date_str: Optional[str]) -> Optional[date]:
         return None
 
 
+def _safe_get(data: Any, key: str, default: Any = None) -> Any:
+    """Safely get a value from a dict, handling lists and None."""
+    if data is None:
+        return default
+    if isinstance(data, list):
+        # If it's a list, try to get from first element
+        if len(data) > 0 and isinstance(data[0], dict):
+            return data[0].get(key, default)
+        return default
+    if isinstance(data, dict):
+        return data.get(key, default)
+    return default
+
+
+def _ensure_dict(data: Any) -> Dict[str, Any]:
+    """Ensure data is a dict, extracting from list if needed."""
+    if data is None:
+        return {}
+    if isinstance(data, dict):
+        return data
+    if isinstance(data, list) and len(data) > 0:
+        if isinstance(data[0], dict):
+            return data[0]
+    return {}
+
+
 def normalize_krs_response(data: Dict[str, Any]) -> NormalizedKRSProfile:
     """Normalize KRS API response to standard profile structure.
     
@@ -176,49 +212,55 @@ def normalize_krs_response(data: Dict[str, Any]) -> NormalizedKRSProfile:
         NormalizedKRSProfile with extracted data.
     """
     # KRS response structure varies, handle nested data
-    odpis = data.get("odpis", data)
-    dane = odpis.get("dane", odpis)
+    odpis = _ensure_dict(data.get("odpis", data))
+    dane = _ensure_dict(odpis.get("dane", odpis))
     
-    # Get podstawowe dane (basic data)
-    dzial1 = dane.get("dzial1", {})
-    dane_podmiotu = dzial1.get("danePodmiotu", {})
-    identyfikatory = dane_podmiotu.get("identyfikatory", {})
+    # Get podstawowe dane (basic data) - can be dict or list
+    dzial1 = _ensure_dict(dane.get("dzial1", {}))
+    dane_podmiotu = _ensure_dict(dzial1.get("danePodmiotu", {}))
+    identyfikatory = _ensure_dict(dane_podmiotu.get("identyfikatory", {}))
     
     # Get siedziba (seat/address)
-    siedziba = dzial1.get("siedzibaIAdres", {})
-    adres_siedziby = siedziba.get("adres", {})
+    siedziba = _ensure_dict(dzial1.get("siedzibaIAdres", {}))
+    adres_siedziby = _ensure_dict(siedziba.get("adres", {}))
     
-    # Get PKD codes
-    dzial3 = dane.get("dzial3", {})
-    przedmiot_dzialalnosci = dzial3.get("przedmiotDzialalnosci", {})
+    # Get PKD codes - dzial3 can be dict or list
+    dzial3 = _ensure_dict(dane.get("dzial3", {}))
+    przedmiot_dzialalnosci = _ensure_dict(dzial3.get("przedmiotDzialalnosci", {}))
     pkd_list = przedmiot_dzialalnosci.get("przedmiotPrzewazajacejDzialalnosci", [])
     if isinstance(pkd_list, dict):
         pkd_list = [pkd_list]
+    elif not isinstance(pkd_list, list):
+        pkd_list = []
     
     pkd_codes = []
     pkd_main = None
     for pkd in pkd_list:
-        if isinstance(pkd, dict):
-            code = pkd.get("kodDzial")
-            if code:
-                pkd_codes.append(code)
-                if not pkd_main:
-                    pkd_main = code
+        pkd = _ensure_dict(pkd)
+        code = pkd.get("kodDzial") or pkd.get("kod")
+        if code:
+            pkd_codes.append(code)
+            if not pkd_main:
+                pkd_main = code
     
-    # Get representatives (zarząd)
-    dzial2 = dane.get("dzial2", {})
-    reprezentacja = dzial2.get("reprezentacja", {})
+    # Get representatives (zarząd) - dzial2 can be dict or list
+    dzial2 = _ensure_dict(dane.get("dzial2", {}))
+    reprezentacja = _ensure_dict(dzial2.get("reprezentacja", {}))
     sklad_organu = reprezentacja.get("skladOrganu", [])
     if isinstance(sklad_organu, dict):
         sklad_organu = [sklad_organu]
+    elif not isinstance(sklad_organu, list):
+        sklad_organu = []
     
     representatives = []
     for osoba in sklad_organu:
-        if isinstance(osoba, dict):
+        osoba = _ensure_dict(osoba)
+        if osoba:
+            ident = _ensure_dict(osoba.get("identyfikator", {}))
             rep = {
                 "name": f"{osoba.get('imiona', '')} {osoba.get('nazwisko', '')}".strip(),
                 "function": osoba.get("funkcjaWOrganie"),
-                "pesel": osoba.get("identyfikator", {}).get("pesel") if isinstance(osoba.get("identyfikator"), dict) else None,
+                "pesel": ident.get("pesel") if ident else None,
             }
             if rep["name"]:
                 representatives.append(rep)
@@ -233,6 +275,10 @@ def normalize_krs_response(data: Dict[str, Any]) -> NormalizedKRSProfile:
         email = siedziba.get("adresEmail") or siedziba.get("email")
         website = siedziba.get("adresStronyInternetowej") or siedziba.get("www")
         phone = siedziba.get("telefon")
+    
+    # Handle kapital which may also be a list
+    kapital = _ensure_dict(dzial1.get("kapital", {}))
+    share_capital = kapital.get("wysokoscKapitaluZakladowego")
     
     return NormalizedKRSProfile(
         krs=identyfikatory.get("krs") or identyfikatory.get("nrKRS"),
@@ -249,7 +295,7 @@ def normalize_krs_response(data: Dict[str, Any]) -> NormalizedKRSProfile:
         email=email,
         website=website,
         phone=phone,
-        share_capital=dzial1.get("kapital", {}).get("wysokoscKapitaluZakladowego"),
+        share_capital=share_capital,
         pkd_main=pkd_main,
         pkd_codes=pkd_codes,
         representatives=representatives,

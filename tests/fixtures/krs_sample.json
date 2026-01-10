@@ -25,7 +25,12 @@
               "nrWpisuWprow": "1"
             }
           ],
-          "nazwaSkrocona": "TEST SP. Z O.O.",
+          "nazwaSkrocona": [
+            {
+              "nazwaSkrocona": "TEST SP. Z O.O.",
+              "nrWpisuWprow": "1"
+            }
+          ],
           "formaPrawna": [
             {
               "formaPrawna": "SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",

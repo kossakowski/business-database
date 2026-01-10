@@ -209,6 +209,9 @@ def _ensure_str(value: Any) -> Optional[str]:
     - If value is a dict, try to extract a text representation.
     - If value is None or empty, return None.
     - Otherwise convert to string.
+    
+    Handles KRS API nested structures like:
+        "nazwaSkrocona": [{"nazwaSkrocona": "...", "nrWpisuWprow": "1"}]
     """
     if value is None:
         return None
@@ -227,19 +230,23 @@ def _ensure_str(value: Any) -> Optional[str]:
         if isinstance(first, str):
             return first if first.strip() else None
         if isinstance(first, dict):
-            # Try common text keys
-            for key in ['value', 'text', 'nazwa', 'name', 'opis']:
+            # Try common text keys (including Polish KRS field names)
+            for key in ['value', 'text', 'nazwa', 'name', 'opis',
+                        'nazwaSkrocona', 'formaPrawna', 'status',
+                        'kodDzial', 'kod', 'imiona', 'nazwisko']:
                 if key in first and first[key]:
                     return str(first[key])
-            # Return first non-empty value
+            # Return first non-empty string value from dict
             for v in first.values():
                 if isinstance(v, str) and v.strip():
                     return v
         return str(first) if first else None
     
     if isinstance(value, dict):
-        # Try common text keys
-        for key in ['value', 'text', 'nazwa', 'name', 'opis']:
+        # Try common text keys (including Polish KRS field names)
+        for key in ['value', 'text', 'nazwa', 'name', 'opis',
+                    'nazwaSkrocona', 'formaPrawna', 'status',
+                    'kodDzial', 'kod', 'imiona', 'nazwisko']:
             if key in value and value[key]:
                 return str(value[key])
         return None

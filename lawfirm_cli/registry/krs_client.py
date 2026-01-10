@@ -260,10 +260,35 @@ def normalize_krs_response(data: Dict[str, Any]) -> NormalizedKRSProfile:
     odpis = _ensure_dict(data.get("odpis", data))
     dane = _ensure_dict(odpis.get("dane", odpis))
     
+    # Get KRS number from header (naglowekP or naglowekA)
+    naglowek = _ensure_dict(odpis.get("naglowekP") or odpis.get("naglowekA") or {})
+    krs_number = _ensure_str(naglowek.get("numerKRS"))
+    
     # Get podstawowe dane (basic data) - can be dict or list
     dzial1 = _ensure_dict(dane.get("dzial1", {}))
     dane_podmiotu = _ensure_dict(dzial1.get("danePodmiotu", {}))
-    identyfikatory = _ensure_dict(dane_podmiotu.get("identyfikatory", {}))
+    
+    # Extract NIP and REGON from identyfikatory list
+    # Structure: identyfikatory: [{identyfikatory: {nip: ..., regon: ...}}, ...]
+    # The latest entry (last in list) has the most current data
+    nip = None
+    regon = None
+    identyfikatory_list = dane_podmiotu.get("identyfikatory", [])
+    if isinstance(identyfikatory_list, list):
+        for item in reversed(identyfikatory_list):  # Start from latest
+            item_dict = _ensure_dict(item)
+            inner_ident = _ensure_dict(item_dict.get("identyfikatory", {}))
+            if not nip:
+                nip = _ensure_str(inner_ident.get("nip"))
+            if not regon:
+                regon = _ensure_str(inner_ident.get("regon"))
+            if nip and regon:
+                break
+    elif isinstance(identyfikatory_list, dict):
+        # Handle case where it's a single dict
+        inner_ident = _ensure_dict(identyfikatory_list.get("identyfikatory", identyfikatory_list))
+        nip = _ensure_str(inner_ident.get("nip"))
+        regon = _ensure_str(inner_ident.get("regon"))
     
     # Get siedziba (seat/address)
     siedziba = _ensure_dict(dzial1.get("siedzibaIAdres", {}))
@@ -328,9 +353,9 @@ def normalize_krs_response(data: Dict[str, Any]) -> NormalizedKRSProfile:
     share_capital = _ensure_str(kapital.get("wysokoscKapitaluZakladowego"))
     
     return NormalizedKRSProfile(
-        krs=_ensure_str(identyfikatory.get("krs") or identyfikatory.get("nrKRS")),
-        nip=_ensure_str(identyfikatory.get("nip")),
-        regon=_ensure_str(identyfikatory.get("regon")),
+        krs=krs_number,
+        nip=nip,
+        regon=regon,
         official_name=_ensure_str(dane_podmiotu.get("nazwa")),
         short_name=_ensure_str(dane_podmiotu.get("nazwaSkrocona")),
         legal_form=_ensure_str(dane_podmiotu.get("formaPrawna")),

@@ -1,19 +1,37 @@
 {
   "odpis": {
-    "napierszyNumerKRS": "0000012345",
     "rodzaj": "Przedsiebiorca",
-    "dataOstModyfikacji": "2024-01-15T10:30:00Z",
+    "naglowekP": {
+      "rejestr": "RejP",
+      "numerKRS": "0000012345",
+      "dataCzasOdpisu": "15.01.2024 10:30:00",
+      "stanZDnia": "14.01.2024"
+    },
     "dane": {
       "dzial1": {
         "danePodmiotu": {
-          "identyfikatory": {
-            "krs": "0000012345",
-            "nip": "1234567890",
-            "regon": "123456789"
-          },
-          "nazwa": "TEST SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+          "identyfikatory": [
+            {
+              "identyfikatory": {
+                "nip": "1234567890",
+                "regon": "123456789"
+              },
+              "nrWpisuWprow": "1"
+            }
+          ],
+          "nazwa": [
+            {
+              "nazwa": "TEST SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+              "nrWpisuWprow": "1"
+            }
+          ],
           "nazwaSkrocona": "TEST SP. Z O.O.",
-          "formaPrawna": "SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+          "formaPrawna": [
+            {
+              "formaPrawna": "SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+              "nrWpisuWprow": "1"
+            }
+          ],
           "kodFormyPrawnej": "117",
           "status": "AKTYWNY",
           "dataRejestracjiWKRS": "2020-06-15"

@@ -74,6 +74,7 @@ from lawfirm_cli.registry.ceidg_client import (
     CEIDGClientError,
     CEIDGNotFoundError,
     CEIDGNotConfiguredError,
+    CEIDGConnectionError,
 )
 from lawfirm_cli.registry.proposals import (
     generate_krs_proposal,
@@ -90,6 +91,167 @@ from lawfirm_cli.registry.ui import (
     print_registry_success,
 )
 from lawfirm_cli.registry.models import ProposalAction
+
+
+# =============================================================================
+# Registry Fetch Helper for Entity Creation
+# =============================================================================
+
+def _fetch_registry_data_for_creation(entity_type: str) -> tuple:
+    """Prompt user to fetch registry data for new entity creation.
+    
+    Args:
+        entity_type: 'PHYSICAL_PERSON' or 'LEGAL_PERSON'.
+        
+    Returns:
+        Tuple of (prefilled_data, identifiers, address, contacts, used_registry)
+        where used_registry is 'KRS', 'CEIDG', or None if manual entry.
+    """
+    prefilled_data = {}
+    identifiers = []
+    address = None
+    contacts = []
+    used_registry = None
+    
+    console.print()
+    console.print("[bold cyan]── Data Source ──[/bold cyan]")
+    console.print()
+    
+    if entity_type == "LEGAL_PERSON":
+        console.print("You can fetch company data from KRS (Krajowy Rejestr Sądowy).")
+        console.print()
+        console.print("  [cyan]1.[/cyan] Fetch from KRS (enter KRS number)")
+        console.print("  [cyan]2.[/cyan] Enter data manually")
+        console.print()
+        
+        choice = console.input("[bold]Select option (1/2):[/bold] ").strip()
+        
+        if choice == "1":
+            krs_number = console.input("Enter KRS number (10 digits): ").strip()
+            if krs_number:
+                try:
+                    print_registry_info("Fetching data from KRS...")
+                    profile, snapshot = fetch_and_normalize_krs(krs_number)
+                    render_profile_summary("KRS", profile)
+                    
+                    console.print()
+                    if click.confirm("Use this data?", default=True):
+                        used_registry = "KRS"
+                        
+                        # Pre-fill entity data
+                        if profile.official_name:
+                            prefilled_data["canonical_label"] = profile.official_name
+                            prefilled_data["registered_name"] = profile.official_name
+                        if profile.short_name:
+                            prefilled_data["short_name"] = profile.short_name
+                        if profile.legal_form:
+                            prefilled_data["legal_form_suffix"] = profile.legal_form
+                        prefilled_data["country"] = "PL"
+                        prefilled_data["status"] = "ACTIVE"
+                        
+                        # Pre-fill identifiers
+                        if profile.krs:
+                            identifiers.append({"type": "KRS", "value": profile.krs})
+                        if profile.nip:
+                            identifiers.append({"type": "NIP", "value": profile.nip})
+                        if profile.regon:
+                            identifiers.append({"type": "REGON", "value": profile.regon})
+                        
+                        # Pre-fill address
+                        if profile.seat_address:
+                            address = profile.seat_address.to_dict()
+                        
+                        # Pre-fill contacts
+                        if profile.email:
+                            contacts.append({"type": "EMAIL", "value": profile.email})
+                        if profile.website:
+                            contacts.append({"type": "WEBSITE", "value": profile.website})
+                        if profile.phone:
+                            contacts.append({"type": "PHONE", "value": profile.phone})
+                        
+                        print_registry_success("Data loaded from KRS!")
+                    else:
+                        print_info("Continuing with manual entry...")
+                        
+                except KRSNotFoundError:
+                    print_registry_error(f"KRS number {krs_number} not found in registry.")
+                    print_info("Continuing with manual entry...")
+                except KRSConnectionError as e:
+                    print_registry_error(f"Connection error: {e}")
+                    print_info("Continuing with manual entry...")
+                except KRSClientError as e:
+                    print_registry_error(f"KRS API error: {e}")
+                    print_info("Continuing with manual entry...")
+    
+    else:  # PHYSICAL_PERSON
+        if is_ceidg_configured():
+            console.print("You can fetch business data from CEIDG (for sole proprietors with NIP).")
+            console.print()
+            console.print("  [cyan]1.[/cyan] Fetch from CEIDG (enter NIP)")
+            console.print("  [cyan]2.[/cyan] Enter data manually")
+            console.print()
+            
+            choice = console.input("[bold]Select option (1/2):[/bold] ").strip()
+            
+            if choice == "1":
+                nip = console.input("Enter NIP (10 digits): ").strip()
+                if nip:
+                    try:
+                        print_registry_info("Fetching data from CEIDG...")
+                        profile, snapshot = fetch_and_normalize_ceidg_by_nip(nip)
+                        render_profile_summary("CEIDG", profile)
+                        
+                        console.print()
+                        if click.confirm("Use this data?", default=True):
+                            used_registry = "CEIDG"
+                            
+                            # Pre-fill person data
+                            if profile.first_name:
+                                prefilled_data["first_name"] = profile.first_name
+                            if profile.last_name:
+                                prefilled_data["last_name"] = profile.last_name
+                            if profile.first_name and profile.last_name:
+                                prefilled_data["canonical_label"] = f"{profile.first_name} {profile.last_name}"
+                            prefilled_data["citizenship_country"] = "PL"
+                            prefilled_data["status"] = "ACTIVE"
+                            prefilled_data["is_deceased"] = False
+                            
+                            # Pre-fill identifiers
+                            if profile.nip:
+                                identifiers.append({"type": "NIP", "value": profile.nip})
+                            if profile.regon:
+                                identifiers.append({"type": "REGON", "value": profile.regon})
+                            
+                            # Pre-fill address
+                            if profile.main_address:
+                                address = profile.main_address.to_dict()
+                            
+                            # Pre-fill contacts
+                            if profile.email:
+                                contacts.append({"type": "EMAIL", "value": profile.email})
+                            if profile.website:
+                                contacts.append({"type": "WEBSITE", "value": profile.website})
+                            if profile.phone:
+                                contacts.append({"type": "PHONE", "value": profile.phone})
+                            
+                            print_registry_success("Data loaded from CEIDG!")
+                        else:
+                            print_info("Continuing with manual entry...")
+                            
+                    except CEIDGNotFoundError:
+                        print_registry_error(f"NIP {nip} not found in CEIDG.")
+                        print_info("Continuing with manual entry...")
+                    except CEIDGConnectionError as e:
+                        print_registry_error(f"Connection error: {e}")
+                        print_info("Continuing with manual entry...")
+                    except CEIDGClientError as e:
+                        print_registry_error(f"CEIDG API error: {e}")
+                        print_info("Continuing with manual entry...")
+        else:
+            console.print("[dim]CEIDG integration not configured. Set CEIDG_API_TOKEN to enable.[/dim]")
+            console.print("[dim]Proceeding with manual entry...[/dim]")
+    
+    return prefilled_data, identifiers, address, contacts, used_registry
 
 
 @click.group()
@@ -129,17 +291,66 @@ def entity_create():
         # Step 1: Select entity type
         entity_type = prompt_entity_type()
         
-        # Step 2: Get entity fields
-        entity_data = prompt_entity_fields(entity_type)
+        # Step 2: Offer registry fetch (KRS for legal, CEIDG for physical)
+        prefilled_data, prefilled_identifiers, prefilled_address, prefilled_contacts, used_registry = \
+            _fetch_registry_data_for_creation(entity_type)
         
-        # Step 3: Get identifiers
-        identifiers = prompt_identifiers(entity_type)
+        # Step 3: Get entity fields (with pre-filled defaults from registry if available)
+        if used_registry:
+            console.print()
+            console.print(f"[dim]Fields pre-filled from {used_registry}. Press Enter to accept or type to change.[/dim]")
+        entity_data = prompt_entity_fields(entity_type, existing_data=prefilled_data)
         
-        # Step 4: Get address (optional)
-        address = prompt_address()
+        # Step 4: Get identifiers
+        if prefilled_identifiers:
+            console.print()
+            console.print(f"[green]✓[/green] {len(prefilled_identifiers)} identifier(s) loaded from {used_registry}:")
+            for ident in prefilled_identifiers:
+                console.print(f"    • {ident['type']}: {ident['value']}")
+            
+            if click.confirm("Add more identifiers?", default=False):
+                additional_ids = prompt_identifiers(entity_type)
+                # Merge, avoiding duplicates
+                existing_types = {i['type'] for i in prefilled_identifiers}
+                for new_id in additional_ids:
+                    if new_id['type'] not in existing_types:
+                        prefilled_identifiers.append(new_id)
+            identifiers = prefilled_identifiers
+        else:
+            identifiers = prompt_identifiers(entity_type)
         
-        # Step 5: Get contacts (optional)
-        contacts = prompt_contacts()
+        # Step 5: Get address
+        if prefilled_address:
+            console.print()
+            console.print(f"[green]✓[/green] Address loaded from {used_registry}:")
+            addr_str = f"    {prefilled_address.get('street', '')} {prefilled_address.get('building_no', '')}".strip()
+            addr_str += f", {prefilled_address.get('postal_code', '')} {prefilled_address.get('city', '')}".strip(", ")
+            console.print(addr_str)
+            
+            if click.confirm("Modify address?", default=False):
+                address = prompt_address(existing=prefilled_address)
+            else:
+                address = prefilled_address
+        else:
+            address = prompt_address()
+        
+        # Step 6: Get contacts
+        if prefilled_contacts:
+            console.print()
+            console.print(f"[green]✓[/green] {len(prefilled_contacts)} contact(s) loaded from {used_registry}:")
+            for contact in prefilled_contacts:
+                console.print(f"    • {contact['type']}: {contact['value']}")
+            
+            if click.confirm("Add more contacts?", default=False):
+                additional_contacts = prompt_contacts()
+                # Merge, avoiding duplicates
+                existing_values = {c['value'].lower() for c in prefilled_contacts}
+                for new_contact in additional_contacts:
+                    if new_contact['value'].lower() not in existing_values:
+                        prefilled_contacts.append(new_contact)
+            contacts = prefilled_contacts
+        else:
+            contacts = prompt_contacts()
         
         # Confirm and create
         console.print()
@@ -149,6 +360,8 @@ def entity_create():
         console.print(f"  Identifiers: {len(identifiers)}")
         console.print(f"  Address: {'Yes' if address else 'No'}")
         console.print(f"  Contacts: {len(contacts)}")
+        if used_registry:
+            console.print(f"  [dim]Data source: {used_registry}[/dim]")
         console.print()
         
         if not click.confirm("Create this entity?", default=True):
@@ -1396,12 +1609,69 @@ def _menu_create_entity():
         console.print()
         console.print("[bold cyan]═══ Create New Entity ═══[/bold cyan]")
         
+        # Step 1: Select entity type
         entity_type = prompt_entity_type()
-        entity_data = prompt_entity_fields(entity_type)
-        identifiers = prompt_identifiers(entity_type)
-        address = prompt_address()
-        contacts = prompt_contacts()
         
+        # Step 2: Offer registry fetch (KRS for legal, CEIDG for physical)
+        prefilled_data, prefilled_identifiers, prefilled_address, prefilled_contacts, used_registry = \
+            _fetch_registry_data_for_creation(entity_type)
+        
+        # Step 3: Get entity fields (with pre-filled defaults from registry if available)
+        if used_registry:
+            console.print()
+            console.print(f"[dim]Fields pre-filled from {used_registry}. Press Enter to accept or type to change.[/dim]")
+        entity_data = prompt_entity_fields(entity_type, existing_data=prefilled_data)
+        
+        # Step 4: Get identifiers
+        if prefilled_identifiers:
+            console.print()
+            console.print(f"[green]✓[/green] {len(prefilled_identifiers)} identifier(s) loaded from {used_registry}:")
+            for ident in prefilled_identifiers:
+                console.print(f"    • {ident['type']}: {ident['value']}")
+            
+            if click.confirm("Add more identifiers?", default=False):
+                additional_ids = prompt_identifiers(entity_type)
+                existing_types = {i['type'] for i in prefilled_identifiers}
+                for new_id in additional_ids:
+                    if new_id['type'] not in existing_types:
+                        prefilled_identifiers.append(new_id)
+            identifiers = prefilled_identifiers
+        else:
+            identifiers = prompt_identifiers(entity_type)
+        
+        # Step 5: Get address
+        if prefilled_address:
+            console.print()
+            console.print(f"[green]✓[/green] Address loaded from {used_registry}:")
+            addr_str = f"    {prefilled_address.get('street', '')} {prefilled_address.get('building_no', '')}".strip()
+            addr_str += f", {prefilled_address.get('postal_code', '')} {prefilled_address.get('city', '')}".strip(", ")
+            console.print(addr_str)
+            
+            if click.confirm("Modify address?", default=False):
+                address = prompt_address(existing=prefilled_address)
+            else:
+                address = prefilled_address
+        else:
+            address = prompt_address()
+        
+        # Step 6: Get contacts
+        if prefilled_contacts:
+            console.print()
+            console.print(f"[green]✓[/green] {len(prefilled_contacts)} contact(s) loaded from {used_registry}:")
+            for contact in prefilled_contacts:
+                console.print(f"    • {contact['type']}: {contact['value']}")
+            
+            if click.confirm("Add more contacts?", default=False):
+                additional_contacts = prompt_contacts()
+                existing_values = {c['value'].lower() for c in prefilled_contacts}
+                for new_contact in additional_contacts:
+                    if new_contact['value'].lower() not in existing_values:
+                        prefilled_contacts.append(new_contact)
+            contacts = prefilled_contacts
+        else:
+            contacts = prompt_contacts()
+        
+        # Confirm and create
         console.print()
         console.print("[bold]Summary:[/bold]")
         console.print(f"  Type: {entity_type}")
@@ -1409,6 +1679,8 @@ def _menu_create_entity():
         console.print(f"  Identifiers: {len(identifiers)}")
         console.print(f"  Address: {'Yes' if address else 'No'}")
         console.print(f"  Contacts: {len(contacts)}")
+        if used_registry:
+            console.print(f"  [dim]Data source: {used_registry}[/dim]")
         console.print()
         
         if not click.confirm("Create this entity?", default=True):

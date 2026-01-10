@@ -401,38 +401,55 @@ def render_profile_summary(
         _render_ceidg_profile(profile)
 
 
+def _safe_str(value: Any) -> str:
+    """Convert any value to a safe string for display."""
+    if value is None:
+        return "—"
+    if isinstance(value, str):
+        return value if value.strip() else "—"
+    if isinstance(value, list):
+        if len(value) == 0:
+            return "—"
+        # Take first string element or convert first element
+        return str(value[0]) if value[0] else "—"
+    return str(value)
+
+
 def _render_krs_profile(profile) -> None:
     """Render KRS profile details."""
     table = Table(box=box.SIMPLE)
     table.add_column("Field", style="cyan")
     table.add_column("Value")
     
-    table.add_row("KRS", profile.krs or "—")
-    table.add_row("NIP", profile.nip or "—")
-    table.add_row("REGON", profile.regon or "—")
-    table.add_row("Name", profile.official_name or "—")
-    table.add_row("Short Name", profile.short_name or "—")
-    table.add_row("Legal Form", profile.legal_form or "—")
-    table.add_row("Status", profile.registry_status or "—")
+    table.add_row("KRS", _safe_str(profile.krs))
+    table.add_row("NIP", _safe_str(profile.nip))
+    table.add_row("REGON", _safe_str(profile.regon))
+    table.add_row("Name", _safe_str(profile.official_name))
+    table.add_row("Short Name", _safe_str(profile.short_name))
+    table.add_row("Legal Form", _safe_str(profile.legal_form))
+    table.add_row("Status", _safe_str(profile.registry_status))
     table.add_row("Registration Date", str(profile.registration_date) if profile.registration_date else "—")
     
     if profile.seat_address:
         table.add_row("Seat Address", profile.seat_address.format_oneline())
     
     if profile.email:
-        table.add_row("Email", profile.email)
+        table.add_row("Email", _safe_str(profile.email))
     if profile.website:
-        table.add_row("Website", profile.website)
+        table.add_row("Website", _safe_str(profile.website))
     if profile.phone:
-        table.add_row("Phone", profile.phone)
+        table.add_row("Phone", _safe_str(profile.phone))
     
     if profile.pkd_main:
-        table.add_row("Main PKD", profile.pkd_main)
+        table.add_row("Main PKD", _safe_str(profile.pkd_main))
     
     if profile.representatives:
-        reps = ", ".join(r.get("name", "?") for r in profile.representatives[:3])
-        if len(profile.representatives) > 3:
-            reps += f" (+{len(profile.representatives) - 3} more)"
+        if isinstance(profile.representatives, list):
+            reps = ", ".join(_safe_str(r.get("name", "?")) for r in profile.representatives[:3] if isinstance(r, dict))
+            if len(profile.representatives) > 3:
+                reps += f" (+{len(profile.representatives) - 3} more)"
+        else:
+            reps = _safe_str(profile.representatives)
         table.add_row("Representatives", reps)
     
     console.print(table)
@@ -444,11 +461,13 @@ def _render_ceidg_profile(profile) -> None:
     table.add_column("Field", style="cyan")
     table.add_column("Value")
     
-    table.add_row("NIP", profile.nip or "—")
-    table.add_row("REGON", profile.regon or "—")
-    table.add_row("Owner", f"{profile.first_name or ''} {profile.last_name or ''}".strip() or "—")
-    table.add_row("Business Name", profile.business_name or "—")
-    table.add_row("Status", profile.status or "—")
+    table.add_row("NIP", _safe_str(profile.nip))
+    table.add_row("REGON", _safe_str(profile.regon))
+    first = _safe_str(profile.first_name) if profile.first_name else ""
+    last = _safe_str(profile.last_name) if profile.last_name else ""
+    table.add_row("Owner", f"{first} {last}".strip() or "—")
+    table.add_row("Business Name", _safe_str(profile.business_name))
+    table.add_row("Status", _safe_str(profile.status))
     table.add_row("Start Date", str(profile.start_date) if profile.start_date else "—")
     
     if profile.end_date:
@@ -458,13 +477,13 @@ def _render_ceidg_profile(profile) -> None:
         table.add_row("Main Address", profile.main_address.format_oneline())
     
     if profile.email:
-        table.add_row("Email", profile.email)
+        table.add_row("Email", _safe_str(profile.email))
     if profile.website:
-        table.add_row("Website", profile.website)
+        table.add_row("Website", _safe_str(profile.website))
     if profile.phone:
-        table.add_row("Phone", profile.phone)
+        table.add_row("Phone", _safe_str(profile.phone))
     
     if profile.pkd_main:
-        table.add_row("Main PKD", profile.pkd_main)
+        table.add_row("Main PKD", _safe_str(profile.pkd_main))
     
     console.print(table)

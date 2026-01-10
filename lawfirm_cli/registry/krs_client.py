@@ -152,16 +152,16 @@ def _extract_address(addr_data: Any) -> Optional[NormalizedAddress]:
     
     return NormalizedAddress(
         address_type="MAIN",
-        country=addr_data.get("kraj", "PL") or "PL",
-        voivodeship=addr_data.get("wojewodztwo"),
-        county=addr_data.get("powiat"),
-        gmina=addr_data.get("gmina"),
-        city=addr_data.get("miejscowosc"),
-        postal_code=addr_data.get("kodPocztowy"),
-        post_office=addr_data.get("poczta"),
-        street=addr_data.get("ulica"),
-        building_no=addr_data.get("nrDomu"),
-        unit_no=addr_data.get("nrLokalu"),
+        country=_ensure_str(addr_data.get("kraj")) or "PL",
+        voivodeship=_ensure_str(addr_data.get("wojewodztwo")),
+        county=_ensure_str(addr_data.get("powiat")),
+        gmina=_ensure_str(addr_data.get("gmina")),
+        city=_ensure_str(addr_data.get("miejscowosc")),
+        postal_code=_ensure_str(addr_data.get("kodPocztowy")),
+        post_office=_ensure_str(addr_data.get("poczta")),
+        street=_ensure_str(addr_data.get("ulica")),
+        building_no=_ensure_str(addr_data.get("nrDomu")),
+        unit_no=_ensure_str(addr_data.get("nrLokalu")),
     )
 
 
@@ -200,6 +200,51 @@ def _ensure_dict(data: Any) -> Dict[str, Any]:
         if isinstance(data[0], dict):
             return data[0]
     return {}
+
+
+def _ensure_str(value: Any) -> Optional[str]:
+    """Ensure a value is a string, handling lists and other types.
+    
+    - If value is a list, take the first string element or first dict's text value.
+    - If value is a dict, try to extract a text representation.
+    - If value is None or empty, return None.
+    - Otherwise convert to string.
+    """
+    if value is None:
+        return None
+    
+    if isinstance(value, str):
+        return value if value.strip() else None
+    
+    if isinstance(value, (int, float)):
+        return str(value)
+    
+    if isinstance(value, list):
+        if len(value) == 0:
+            return None
+        # Take first element
+        first = value[0]
+        if isinstance(first, str):
+            return first if first.strip() else None
+        if isinstance(first, dict):
+            # Try common text keys
+            for key in ['value', 'text', 'nazwa', 'name', 'opis']:
+                if key in first and first[key]:
+                    return str(first[key])
+            # Return first non-empty value
+            for v in first.values():
+                if isinstance(v, str) and v.strip():
+                    return v
+        return str(first) if first else None
+    
+    if isinstance(value, dict):
+        # Try common text keys
+        for key in ['value', 'text', 'nazwa', 'name', 'opis']:
+            if key in value and value[key]:
+                return str(value[key])
+        return None
+    
+    return str(value)
 
 
 def normalize_krs_response(data: Dict[str, Any]) -> NormalizedKRSProfile:
@@ -257,10 +302,12 @@ def normalize_krs_response(data: Dict[str, Any]) -> NormalizedKRSProfile:
         osoba = _ensure_dict(osoba)
         if osoba:
             ident = _ensure_dict(osoba.get("identyfikator", {}))
+            imiona = _ensure_str(osoba.get('imiona')) or ''
+            nazwisko = _ensure_str(osoba.get('nazwisko')) or ''
             rep = {
-                "name": f"{osoba.get('imiona', '')} {osoba.get('nazwisko', '')}".strip(),
-                "function": osoba.get("funkcjaWOrganie"),
-                "pesel": ident.get("pesel") if ident else None,
+                "name": f"{imiona} {nazwisko}".strip(),
+                "function": _ensure_str(osoba.get("funkcjaWOrganie")),
+                "pesel": _ensure_str(ident.get("pesel")) if ident else None,
             }
             if rep["name"]:
                 representatives.append(rep)
@@ -272,32 +319,32 @@ def normalize_krs_response(data: Dict[str, Any]) -> NormalizedKRSProfile:
     
     # Some KRS entries have contact info in siedziba
     if siedziba:
-        email = siedziba.get("adresEmail") or siedziba.get("email")
-        website = siedziba.get("adresStronyInternetowej") or siedziba.get("www")
-        phone = siedziba.get("telefon")
+        email = _ensure_str(siedziba.get("adresEmail") or siedziba.get("email"))
+        website = _ensure_str(siedziba.get("adresStronyInternetowej") or siedziba.get("www"))
+        phone = _ensure_str(siedziba.get("telefon"))
     
     # Handle kapital which may also be a list
     kapital = _ensure_dict(dzial1.get("kapital", {}))
-    share_capital = kapital.get("wysokoscKapitaluZakladowego")
+    share_capital = _ensure_str(kapital.get("wysokoscKapitaluZakladowego"))
     
     return NormalizedKRSProfile(
-        krs=identyfikatory.get("krs") or identyfikatory.get("nrKRS"),
-        nip=identyfikatory.get("nip"),
-        regon=identyfikatory.get("regon"),
-        official_name=dane_podmiotu.get("nazwa"),
-        short_name=dane_podmiotu.get("nazwaSkrocona"),
-        legal_form=dane_podmiotu.get("formaPrawna"),
-        legal_form_code=dane_podmiotu.get("kodFormyPrawnej"),
-        registry_status=dane_podmiotu.get("status"),
-        registration_date=_parse_date(dane_podmiotu.get("dataRejestracjiWKRS")),
+        krs=_ensure_str(identyfikatory.get("krs") or identyfikatory.get("nrKRS")),
+        nip=_ensure_str(identyfikatory.get("nip")),
+        regon=_ensure_str(identyfikatory.get("regon")),
+        official_name=_ensure_str(dane_podmiotu.get("nazwa")),
+        short_name=_ensure_str(dane_podmiotu.get("nazwaSkrocona")),
+        legal_form=_ensure_str(dane_podmiotu.get("formaPrawna")),
+        legal_form_code=_ensure_str(dane_podmiotu.get("kodFormyPrawnej")),
+        registry_status=_ensure_str(dane_podmiotu.get("status")),
+        registration_date=_parse_date(_ensure_str(dane_podmiotu.get("dataRejestracjiWKRS"))),
         seat_address=_extract_address(adres_siedziby),
         correspondence_address=None,  # May be in different section
         email=email,
         website=website,
         phone=phone,
         share_capital=share_capital,
-        pkd_main=pkd_main,
-        pkd_codes=pkd_codes,
+        pkd_main=_ensure_str(pkd_main),
+        pkd_codes=[_ensure_str(c) for c in pkd_codes if _ensure_str(c)],
         representatives=representatives,
         raw_payload=data,
     )

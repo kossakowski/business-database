@@ -324,12 +324,6 @@ def prompt_entity_fields(
         test=test,
     )
     
-    data["status"] = prompt_field(
-        "entity.status",
-        existing.get("status", "ACTIVE"),
-        test=test,
-    ) or "ACTIVE"
-    
     data["notes"] = prompt_field(
         "entity.notes",
         existing.get("notes"),

@@ -105,7 +105,6 @@ def create_entity(
                 entity_id,
                 entity_type,
                 entity_data.get("canonical_label"),
-                entity_data.get("status", "ACTIVE"),
                 entity_data.get("notes"),
                 now,
                 now,
@@ -376,9 +375,6 @@ def update_entity(
             updates.append("canonical_label = %s")
             params.append(entity_data["canonical_label"])
         if "status" in entity_data:
-            updates.append("status = %s")
-            params.append(entity_data["status"])
-        if "notes" in entity_data:
             updates.append("notes = %s")
             params.append(entity_data["notes"])
         

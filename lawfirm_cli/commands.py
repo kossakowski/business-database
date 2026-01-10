@@ -147,7 +147,6 @@ def _fetch_registry_data_for_creation(entity_type: str) -> tuple:
                         if profile.legal_form:
                             prefilled_data["legal_form_suffix"] = profile.legal_form
                         prefilled_data["country"] = "PL"
-                        prefilled_data["status"] = "ACTIVE"
                         
                         # Pre-fill identifiers
                         if profile.krs:
@@ -213,7 +212,6 @@ def _fetch_registry_data_for_creation(entity_type: str) -> tuple:
                             if profile.first_name and profile.last_name:
                                 prefilled_data["canonical_label"] = f"{profile.first_name} {profile.last_name}"
                             prefilled_data["citizenship_country"] = "PL"
-                            prefilled_data["status"] = "ACTIVE"
                             prefilled_data["is_deceased"] = False
                             
                             # Pre-fill identifiers
@@ -524,9 +522,7 @@ def _update_core_fields(entity_id: str, existing: dict):
     
     data = {}
     data["canonical_label"] = prompt_field("entity.canonical_label", existing.get("canonical_label"))
-    data["status"] = prompt_field("entity.status", existing.get("status"))
     data["notes"] = prompt_field("entity.notes", existing.get("notes"))
-    
     # Filter out None values (unchanged)
     data = {k: v for k, v in data.items() if v is not None}
     

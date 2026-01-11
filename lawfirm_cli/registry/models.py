@@ -88,10 +88,15 @@ class NormalizedKRSProfile:
     # Names
     official_name: Optional[str] = None
     short_name: Optional[str] = None
+    particular_name: Optional[str] = None  # Name without legal form suffix
     
-    # Legal form
-    legal_form: Optional[str] = None
-    legal_form_code: Optional[str] = None
+    # Legal form (from KRS)
+    legal_form: Optional[str] = None       # formaPrawna from KRS (e.g., "SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ")
+    legal_form_code: Optional[str] = None  # kodFormyPrawnej from KRS (e.g., "117")
+    
+    # Parsed legal form (for internal use)
+    legal_kind: Optional[str] = None       # Internal enum (e.g., "SPOLKA_Z_OO")
+    legal_form_suffix: Optional[str] = None  # Standard suffix (e.g., "sp. z o.o.")
     
     # Status
     registry_status: Optional[str] = None

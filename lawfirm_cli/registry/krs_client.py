@@ -25,6 +25,7 @@ from lawfirm_cli.registry.models import (
     NormalizedAddress,
     RegistrySnapshot,
 )
+from lawfirm_cli.company_names import parse_krs_company_data
 
 
 # Default configuration
@@ -359,14 +360,33 @@ def normalize_krs_response(data: Dict[str, Any]) -> NormalizedKRSProfile:
     kapital = _ensure_dict(dzial1.get("kapital", {}))
     share_capital = _ensure_str(kapital.get("wysokoscKapitaluZakladowego"))
     
+    # Extract official name and legal form from KRS data
+    official_name = _ensure_str(dane_podmiotu.get("nazwa"))
+    krs_short_name = _ensure_str(dane_podmiotu.get("nazwaSkrocona"))
+    legal_form_name = _ensure_str(dane_podmiotu.get("formaPrawna"))
+    legal_form_code = _ensure_str(dane_podmiotu.get("kodFormyPrawnej"))
+    
+    # Use smart parsing to determine legal_kind and suggest short_name
+    parsed_company = parse_krs_company_data(
+        official_name=official_name,
+        legal_form_name=legal_form_name,
+        legal_form_code=legal_form_code,
+    )
+    
+    # Prefer KRS-provided short name, fall back to our suggestion
+    short_name = krs_short_name or parsed_company.get("short_name")
+    
     return NormalizedKRSProfile(
         krs=krs_number,
         nip=nip,
         regon=regon,
-        official_name=_ensure_str(dane_podmiotu.get("nazwa")),
-        short_name=_ensure_str(dane_podmiotu.get("nazwaSkrocona")),
-        legal_form=_ensure_str(dane_podmiotu.get("formaPrawna")),
-        legal_form_code=_ensure_str(dane_podmiotu.get("kodFormyPrawnej")),
+        official_name=official_name,
+        short_name=short_name,
+        legal_form=legal_form_name,
+        legal_form_code=legal_form_code,
+        legal_kind=parsed_company.get("legal_kind"),
+        legal_form_suffix=parsed_company.get("legal_form_suffix"),
+        particular_name=parsed_company.get("particular_name"),
         registry_status=_ensure_str(dane_podmiotu.get("status")),
         registration_date=_parse_date(_ensure_str(dane_podmiotu.get("dataRejestracjiWKRS"))),
         seat_address=_extract_address(adres_siedziby),

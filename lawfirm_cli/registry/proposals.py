@@ -202,12 +202,22 @@ def generate_krs_proposal(
                 f"Registry name differs: '{profile.official_name}' vs current '{current_name}'"
             )
         
-        # Short name
+        # Short name - prefer the parsed suggestion if KRS doesn't provide one
         if profile.short_name and not entity.get("short_name"):
             proposal.type_specific_updates["short_name"] = profile.short_name
         
-        # Legal form suffix
-        if profile.legal_form and not entity.get("legal_form_suffix"):
+        # Legal kind (entity type like SPOLKA_Z_OO, SPOLKA_AKCYJNA, etc.)
+        if profile.legal_kind and not entity.get("legal_kind"):
+            proposal.type_specific_updates["legal_kind"] = profile.legal_kind
+            proposal.info_messages.append(
+                f"Detected company type: {profile.legal_kind} (from KRS legal form)"
+            )
+        
+        # Legal form suffix (abbreviated form like "sp. z o.o.", "S.A.")
+        if profile.legal_form_suffix and not entity.get("legal_form_suffix"):
+            proposal.type_specific_updates["legal_form_suffix"] = profile.legal_form_suffix
+        elif profile.legal_form and not entity.get("legal_form_suffix"):
+            # Fallback to full legal form from KRS if no parsed suffix
             proposal.type_specific_updates["legal_form_suffix"] = profile.legal_form
     
     # Core updates (canonical_label)

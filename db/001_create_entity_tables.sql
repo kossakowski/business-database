@@ -47,7 +47,6 @@ CREATE TABLE IF NOT EXISTS legal_persons (
     registered_name     TEXT NOT NULL,
     short_name          TEXT,
     legal_kind          TEXT,  -- SPOLKA_Z_OO, SPOLKA_AKCYJNA, FUNDACJA, etc.
-    legal_nature        TEXT,  -- OSOBA_PRAWNA, JEDNOSTKA_ORG, etc.
     legal_form_suffix   TEXT,  -- sp. z o.o., S.A., etc.
     country             TEXT DEFAULT 'PL'
 );

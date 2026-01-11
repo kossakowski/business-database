@@ -351,7 +351,6 @@ def prompt_entity_fields(
         data["registered_name"] = prompt_field("legal.registered_name", existing.get("registered_name"), required=True, test=test)
         data["short_name"] = prompt_field("legal.short_name", existing.get("short_name"), test=test)
         data["legal_kind"] = prompt_field("legal.legal_kind", existing.get("legal_kind"), test=test)
-        data["legal_nature"] = prompt_field("legal.legal_nature", existing.get("legal_nature"), test=test)
         data["legal_form_suffix"] = prompt_field("legal.legal_form_suffix", existing.get("legal_form_suffix"), test=test)
         data["country"] = prompt_field("legal.country", existing.get("country", "PL"), test=test) or "PL"
     

@@ -142,10 +142,21 @@ def _fetch_registry_data_for_creation(entity_type: str) -> tuple:
                         if profile.official_name:
                             prefilled_data["canonical_label"] = profile.official_name
                             prefilled_data["registered_name"] = profile.official_name
+                        
+                        # Use the parsed short name (e.g., "PROFINANCE S.A." from "PROFINANCE SPÓŁKA AKCYJNA")
                         if profile.short_name:
                             prefilled_data["short_name"] = profile.short_name
-                        if profile.legal_form:
+                        
+                        # Use the detected legal_kind (e.g., "SPOLKA_AKCYJNA", "SPOLKA_Z_OO")
+                        if profile.legal_kind:
+                            prefilled_data["legal_kind"] = profile.legal_kind
+                        
+                        # Use the standard suffix (e.g., "S.A.", "sp. z o.o.")
+                        if profile.legal_form_suffix:
+                            prefilled_data["legal_form_suffix"] = profile.legal_form_suffix
+                        elif profile.legal_form:
                             prefilled_data["legal_form_suffix"] = profile.legal_form
+                        
                         prefilled_data["country"] = "PL"
                         
                         # Pre-fill identifiers
@@ -387,19 +398,44 @@ def entity_create():
 @click.option("--type", "-t", "entity_type", 
               type=click.Choice(["PHYSICAL_PERSON", "LEGAL_PERSON"]),
               help="Filter by entity type")
-@click.option("--search", "-s", help="Search in entity labels")
+@click.option("--search", "-s", help="Search in names (label, registered name, surname, etc.)")
+@click.option("--nip", help="Search by NIP")
+@click.option("--krs", help="Search by KRS number")
+@click.option("--regon", help="Search by REGON")
+@click.option("--pesel", help="Search by PESEL")
 @click.option("--limit", "-l", default=20, help="Maximum results")
-def entity_list(entity_type, search, limit):
-    """List entities."""
+def entity_list(entity_type, search, nip, krs, regon, pesel, limit):
+    """List entities.
+    
+    Search by name or identifier:
+    
+        lawfirm-cli entity list --search "Kowalski"
+        lawfirm-cli entity list --nip 1234567890
+        lawfirm-cli entity list --krs 0000123456
+    """
     available, message = check_entities_available()
     if not available:
         print_error(message)
         return
     
+    # Determine identifier search
+    identifier_type = None
+    identifier_value = None
+    if nip:
+        identifier_type, identifier_value = "NIP", nip
+    elif krs:
+        identifier_type, identifier_value = "KRS", krs
+    elif regon:
+        identifier_type, identifier_value = "REGON", regon
+    elif pesel:
+        identifier_type, identifier_value = "PESEL", pesel
+    
     try:
         entities = list_entities(
             entity_type=entity_type,
             search=search,
+            identifier_type=identifier_type,
+            identifier_value=identifier_value,
             limit=limit,
         )
         
@@ -412,7 +448,6 @@ def entity_list(entity_type, search, limit):
             ("entity_type", "Type"),
             ("canonical_label", "Label"),
             ("primary_identifier", "Primary ID"),
-            ("status", "Status"),
         ]
         
         # Shorten IDs for display
@@ -558,7 +593,6 @@ def _update_type_specific_fields(entity_id: str, existing: dict):
         data["registered_name"] = prompt_field("legal.registered_name", existing.get("registered_name"))
         data["short_name"] = prompt_field("legal.short_name", existing.get("short_name"))
         data["legal_kind"] = prompt_field("legal.legal_kind", existing.get("legal_kind"))
-        data["legal_nature"] = prompt_field("legal.legal_nature", existing.get("legal_nature"))
         data["legal_form_suffix"] = prompt_field("legal.legal_form_suffix", existing.get("legal_form_suffix"))
         data["country"] = prompt_field("legal.country", existing.get("country"))
     
@@ -1712,17 +1746,63 @@ def _menu_list_entities():
         console.print("[bold cyan]═══ Entity List ═══[/bold cyan]")
         console.print()
         
-        # Ask for filter
-        console.print("[dim]Filter options (press Enter to skip):[/dim]")
-        search = console.input("Search by name: ").strip() or None
+        # Ask for search type
+        console.print("[bold]Search options:[/bold]")
+        console.print("  [cyan]1.[/cyan] Search by name (label, registered name, surname, etc.)")
+        console.print("  [cyan]2.[/cyan] Search by NIP")
+        console.print("  [cyan]3.[/cyan] Search by KRS")
+        console.print("  [cyan]4.[/cyan] Search by REGON")
+        console.print("  [cyan]5.[/cyan] Search by PESEL")
+        console.print("  [cyan]0.[/cyan] List all (no filter)")
+        console.print()
         
-        entities = list_entities(search=search, limit=50)
+        choice = console.input("[bold]Select option (0-5):[/bold] ").strip()
+        
+        entities = []
+        
+        if choice == "1":
+            search = console.input("Enter search term: ").strip()
+            if search:
+                entities = list_entities(search=search, limit=50)
+            else:
+                entities = list_entities(limit=50)
+        elif choice == "2":
+            nip = console.input("Enter NIP: ").strip()
+            if nip:
+                entities = list_entities(identifier_type="NIP", identifier_value=nip, limit=50)
+            else:
+                print_warning("No NIP entered.")
+                return
+        elif choice == "3":
+            krs = console.input("Enter KRS: ").strip()
+            if krs:
+                entities = list_entities(identifier_type="KRS", identifier_value=krs, limit=50)
+            else:
+                print_warning("No KRS entered.")
+                return
+        elif choice == "4":
+            regon = console.input("Enter REGON: ").strip()
+            if regon:
+                entities = list_entities(identifier_type="REGON", identifier_value=regon, limit=50)
+            else:
+                print_warning("No REGON entered.")
+                return
+        elif choice == "5":
+            pesel = console.input("Enter PESEL: ").strip()
+            if pesel:
+                entities = list_entities(identifier_type="PESEL", identifier_value=pesel, limit=50)
+            else:
+                print_warning("No PESEL entered.")
+                return
+        else:
+            # Default: list all
+            entities = list_entities(limit=50)
         
         if not entities:
             print_info("No entities found.")
             return
         
-        # Store entities for selection
+        # Display entity list
         _display_entity_list(entities)
         
     except Exception as e:
@@ -1875,7 +1955,11 @@ def _select_entity(action: str) -> str:
     console.print()
     console.print("[dim]Enter entity ID directly, or search first:[/dim]")
     console.print()
-    console.print("  [cyan]S.[/cyan] Search entities")
+    console.print("  [cyan]S.[/cyan] Search by name")
+    console.print("  [cyan]N.[/cyan] Search by NIP")
+    console.print("  [cyan]K.[/cyan] Search by KRS")
+    console.print("  [cyan]R.[/cyan] Search by REGON")
+    console.print("  [cyan]P.[/cyan] Search by PESEL")
     console.print("  [cyan]L.[/cyan] List recent entities")
     console.print("  [cyan]I.[/cyan] Enter ID directly")
     console.print("  [cyan]0.[/cyan] Cancel")
@@ -1886,10 +1970,38 @@ def _select_entity(action: str) -> str:
     if choice == "0":
         return None
     elif choice == "S":
-        search = Prompt.ask("Search term")
+        search = Prompt.ask("Search term (name/surname)")
         entities = list_entities(search=search, limit=20)
         if not entities:
             print_info("No entities found.")
+            return None
+        return _pick_from_list(entities)
+    elif choice == "N":
+        nip = Prompt.ask("Enter NIP (10 digits)")
+        entities = list_entities(identifier_type="NIP", identifier_value=nip, limit=20)
+        if not entities:
+            print_info("No entities found with this NIP.")
+            return None
+        return _pick_from_list(entities)
+    elif choice == "K":
+        krs = Prompt.ask("Enter KRS number")
+        entities = list_entities(identifier_type="KRS", identifier_value=krs, limit=20)
+        if not entities:
+            print_info("No entities found with this KRS.")
+            return None
+        return _pick_from_list(entities)
+    elif choice == "R":
+        regon = Prompt.ask("Enter REGON")
+        entities = list_entities(identifier_type="REGON", identifier_value=regon, limit=20)
+        if not entities:
+            print_info("No entities found with this REGON.")
+            return None
+        return _pick_from_list(entities)
+    elif choice == "P":
+        pesel = Prompt.ask("Enter PESEL")
+        entities = list_entities(identifier_type="PESEL", identifier_value=pesel, limit=20)
+        if not entities:
+            print_info("No entities found with this PESEL.")
             return None
         return _pick_from_list(entities)
     elif choice == "L":

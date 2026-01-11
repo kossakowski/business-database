@@ -161,7 +161,6 @@ CREATE TABLE public.legal_persons (
     registered_name text NOT NULL,
     short_name text,
     legal_kind text,
-    legal_nature text,
     legal_form_suffix text,
     country text DEFAULT 'PL'::text
 );

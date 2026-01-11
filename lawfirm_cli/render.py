@@ -180,7 +180,6 @@ def render_entity_detail(
         ("ID", entity.get("id")),
         ("Type", type_label),
         ("Label", canonical_label),
-        ("Status", entity.get("status", "—")),
         ("Notes", entity.get("notes", "—")),
         ("Created", entity.get("created_at", "—")),
         ("Updated", entity.get("updated_at", "—")),
@@ -205,7 +204,6 @@ def render_entity_detail(
             ("Registered Name", entity.get("registered_name", "—")),
             ("Short Name", entity.get("short_name", "—")),
             ("Legal Kind", kind_label),
-            ("Legal Nature", entity.get("legal_nature", "—")),
             ("Form Suffix", entity.get("legal_form_suffix", "—")),
             ("Country", entity.get("country", "—")),
         ])

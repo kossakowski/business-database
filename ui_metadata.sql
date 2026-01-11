@@ -44,7 +44,7 @@ INSERT INTO meta.ui_field_metadata
 VALUES
 ('entity.entity_type','Typ podmiotu','Wybierz: osoba fizyczna albo podmiot niebędący osobą fizyczną (np. spółka, fundacja, wspólnota).','—','OSOBA_FIZYCZNA','select','INTERNAL','MANUAL',NULL,'Podmiot',10,true),
 
-('entity.canonical_label','Nazwa skrócona / etykieta','Krótka etykieta do wyszukiwania i list (np. “Kowalski Jan”, “ABC sp. z o.o.”). Nie musi być formalną nazwą z rejestru.','Kowalski Jan','ABC sp. z o.o.','text','INTERNAL','MANUAL',NULL,'Podmiot',20,true),
+('entity.canonical_label','Etykieta','Krótka etykieta do wyszukiwania i list (np. “Kowalski Jan”, “ABC sp. z o.o.”). Nie musi być formalną nazwą z rejestru.','Kowalski Jan','ABC sp. z o.o.','text','INTERNAL','MANUAL',NULL,'Podmiot',20,true),
 
 ('entity.status','Status rekordu','Status w systemie (np. aktywny/nieaktywny). Nie mylić ze statusem w KRS/CEIDG.','AKTYWNY','AKTYWNY','select','INTERNAL','MANUAL',NULL,'Podmiot',30,true),
 
@@ -85,7 +85,6 @@ VALUES
 ('legal.registered_name','Nazwa formalna','Pełna nazwa formalna (najlepiej dokładnie jak w KRS/CEIDG/umowie).','ABC sp. z o.o.','Fundacja Rodzinna XYZ','text','INTERNAL','KRS/CEIDG',NULL,'Podmiot prawny',10,true),
 ('legal.short_name','Nazwa skrócona','Opcjonalnie: nazwa skrócona/marketingowa używana w korespondencji.','ABC',NULL,'text','INTERNAL','MANUAL',NULL,'Podmiot prawny',20,true),
 ('legal.legal_kind','Rodzaj podmiotu','Wybierz typ podmiotu (np. sp. z o.o., S.A., fundacja, wspólnota). Ułatwia formatowanie nazwy i walidację sufiksu.','SPOLKA_Z_OO','FUNDACJA','select','INTERNAL','MANUAL',NULL,'Podmiot prawny',30,true),
-('legal.legal_nature','Natura prawna','Precyzyjne ujęcie prawne (osoba prawna / ułomna osoba prawna / spółka cywilna itp.). Pomaga w poprawnym opisie w pismach.','OSOBA_PRAWNA','JEDNOSTKA_ORG','select','INTERNAL','MANUAL',NULL,'Podmiot prawny',40,true),
 ('legal.legal_form_suffix','Sufiks / skrót formy','Skrót formy prawnej, jeśli ma zastosowanie (np. “sp. z o.o.”, “sp.k.”, “S.A.”). Dla części podmiotów nie stosuje się sufiksu — wtedy zostaw puste.','sp. z o.o.','sp.k.','text','INTERNAL','MANUAL','Ustal wg formy prawnej','Podmiot prawny',50,true),
 ('legal.country','Kraj rejestracji','Zwykle PL. Jeśli podmiot zagraniczny, wpisz kod kraju (np. DE, CZ).','PL','PL','text','INTERNAL','MANUAL','2-literowy kod kraju','Podmiot prawny',60,true)
 ON CONFLICT (field_key) DO UPDATE SET

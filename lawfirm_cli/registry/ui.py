@@ -427,7 +427,6 @@ def _render_krs_profile(profile) -> None:
     table.add_row("Name", _safe_str(profile.official_name))
     table.add_row("Short Name", _safe_str(profile.short_name))
     table.add_row("Legal Form", _safe_str(profile.legal_form))
-    table.add_row("Status", _safe_str(profile.registry_status))
     table.add_row("Registration Date", str(profile.registration_date) if profile.registration_date else "—")
     
     if profile.seat_address:
@@ -467,7 +466,6 @@ def _render_ceidg_profile(profile) -> None:
     last = _safe_str(profile.last_name) if profile.last_name else ""
     table.add_row("Owner", f"{first} {last}".strip() or "—")
     table.add_row("Business Name", _safe_str(profile.business_name))
-    table.add_row("Status", _safe_str(profile.status))
     table.add_row("Start Date", str(profile.start_date) if profile.start_date else "—")
     
     if profile.end_date:

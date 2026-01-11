@@ -31,6 +31,10 @@ We do **NOT** store (yet):
 
 Those will be added in later phases.
 
+### Future Considerations
+
+- **Duplicate identifier handling**: Currently, the system rejects entries with duplicate identifiers (e.g., same NIP or KRS on multiple entities) with an error. This is intentional—it prevents incomplete or fragmented records and enforces data discipline. In the future, it may be worth revisiting whether certain users (e.g., administrators) should have the ability to override this constraint, perhaps with a warning and audit trail, for edge cases where duplicates are legitimate.
+
 ---
 
 ## Database

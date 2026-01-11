@@ -98,9 +98,9 @@ def create_entity(
             # 1. Create base entity
             cursor.execute("""
                 INSERT INTO entities (
-                    id, entity_type, canonical_label, status, notes,
+                    id, entity_type, canonical_label, notes,
                     created_at, updated_at
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+                ) VALUES (%s, %s, %s, %s, %s, %s)
             """, (
                 entity_id,
                 entity_type,
@@ -130,14 +130,13 @@ def create_entity(
                 cursor.execute("""
                     INSERT INTO legal_persons (
                         entity_id, registered_name, short_name, legal_kind,
-                        legal_nature, legal_form_suffix, country
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+                        legal_form_suffix, country
+                    ) VALUES (%s, %s, %s, %s, %s, %s)
                 """, (
                     entity_id,
                     entity_data.get("registered_name"),
                     entity_data.get("short_name"),
                     entity_data.get("legal_kind"),
-                    entity_data.get("legal_nature"),
                     entity_data.get("legal_form_suffix"),
                     entity_data.get("country", "PL"),
                 ))
@@ -211,6 +210,8 @@ def create_entity(
 def list_entities(
     entity_type: Optional[str] = None,
     search: Optional[str] = None,
+    identifier_type: Optional[str] = None,
+    identifier_value: Optional[str] = None,
     limit: int = 50,
     offset: int = 0,
     test: bool = False,
@@ -219,7 +220,10 @@ def list_entities(
     
     Args:
         entity_type: Filter by type ('PHYSICAL_PERSON' or 'LEGAL_PERSON').
-        search: Search in canonical_label.
+        search: Search in names (canonical_label, registered_name, short_name,
+                first_name, middle_names, last_name).
+        identifier_type: Search by identifier type ('NIP', 'KRS', 'REGON', 'PESEL').
+        identifier_value: The identifier value to search for.
         limit: Maximum number of results.
         offset: Offset for pagination.
         test: If True, use test database.
@@ -230,11 +234,10 @@ def list_entities(
     require_entity_tables(test=test)
     
     query = """
-        SELECT 
+        SELECT DISTINCT
             e.id,
             e.entity_type,
             e.canonical_label,
-            e.status,
             e.created_at,
             (
                 SELECT identifier_value 
@@ -250,6 +253,9 @@ def list_entities(
                 LIMIT 1
             ) as primary_identifier
         FROM entities e
+        LEFT JOIN physical_persons pp ON e.id = pp.entity_id AND e.entity_type = 'PHYSICAL_PERSON'
+        LEFT JOIN legal_persons lp ON e.id = lp.entity_id AND e.entity_type = 'LEGAL_PERSON'
+        LEFT JOIN identifiers ident ON e.id = ident.entity_id
         WHERE 1=1
     """
     params = []
@@ -258,9 +264,27 @@ def list_entities(
         query += " AND e.entity_type = %s"
         params.append(entity_type)
     
+    # Search by identifier (exact match, normalized)
+    if identifier_type and identifier_value:
+        # Normalize: remove spaces, dashes
+        normalized_value = identifier_value.strip().replace("-", "").replace(" ", "")
+        query += " AND ident.identifier_type = %s AND REPLACE(REPLACE(ident.identifier_value, '-', ''), ' ', '') = %s"
+        params.append(identifier_type)
+        params.append(normalized_value)
+    
+    # Text search across name fields
     if search:
-        query += " AND e.canonical_label ILIKE %s"
-        params.append(f"%{search}%")
+        search_pattern = f"%{search}%"
+        query += """ AND (
+            e.canonical_label ILIKE %s
+            OR lp.registered_name ILIKE %s
+            OR lp.short_name ILIKE %s
+            OR pp.first_name ILIKE %s
+            OR pp.middle_names ILIKE %s
+            OR pp.last_name ILIKE %s
+            OR CONCAT(pp.first_name, ' ', pp.last_name) ILIKE %s
+        )"""
+        params.extend([search_pattern] * 7)
     
     query += " ORDER BY e.created_at DESC LIMIT %s OFFSET %s"
     params.extend([limit, offset])
@@ -374,7 +398,7 @@ def update_entity(
         if "canonical_label" in entity_data:
             updates.append("canonical_label = %s")
             params.append(entity_data["canonical_label"])
-        if "status" in entity_data:
+        if "notes" in entity_data:
             updates.append("notes = %s")
             params.append(entity_data["notes"])
         
@@ -410,7 +434,7 @@ def update_entity(
             type_params = []
             
             for field in ["registered_name", "short_name", "legal_kind",
-                         "legal_nature", "legal_form_suffix", "country"]:
+                         "legal_form_suffix", "country"]:
                 if field in entity_data:
                     type_updates.append(f"{field} = %s")
                     type_params.append(entity_data[field])

@@ -14,7 +14,7 @@ Environment Variables:
 import hashlib
 import json
 import os
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from typing import Any, Dict, Optional, Tuple
 
 import requests
@@ -143,8 +143,8 @@ def _extract_address(addr_data: Any) -> Optional[NormalizedAddress]:
     
     # Handle case where addr_data is a list
     if isinstance(addr_data, list):
-        if len(addr_data) > 0 and isinstance(addr_data[0], dict):
-            addr_data = addr_data[0]
+        if len(addr_data) > 0 and isinstance(addr_data[-1], dict):
+            addr_data = addr_data[-1]
         else:
             return None
     
@@ -183,8 +183,8 @@ def _safe_get(data: Any, key: str, default: Any = None) -> Any:
         return default
     if isinstance(data, list):
         # If it's a list, try to get from first element
-        if len(data) > 0 and isinstance(data[0], dict):
-            return data[0].get(key, default)
+        if len(data) > 0 and isinstance(data[-1], dict):
+            return data[-1].get(key, default)
         return default
     if isinstance(data, dict):
         return data.get(key, default)
@@ -198,8 +198,8 @@ def _ensure_dict(data: Any) -> Dict[str, Any]:
     if isinstance(data, dict):
         return data
     if isinstance(data, list) and len(data) > 0:
-        if isinstance(data[0], dict):
-            return data[0]
+        if isinstance(data[-1], dict):
+            return data[-1]
     return {}
 
 
@@ -226,8 +226,8 @@ def _ensure_str(value: Any) -> Optional[str]:
     if isinstance(value, list):
         if len(value) == 0:
             return None
-        # Take first element
-        first = value[0]
+        # Take last element (most recent entry in KRS historical lists)
+        first = value[-1]
         if isinstance(first, str):
             return first if first.strip() else None
         if isinstance(first, dict):
@@ -428,7 +428,7 @@ def fetch_and_normalize_krs(
         entity_id=entity_id,
         source_system="KRS",
         external_id=krs,
-        fetched_at=datetime.utcnow(),
+        fetched_at=datetime.now(timezone.utc),
         payload_format="json",
         payload_raw=raw_json,
         payload_hash=hashlib.sha256(raw_json.encode()).hexdigest(),

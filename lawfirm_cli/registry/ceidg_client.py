@@ -17,7 +17,7 @@ a clear error message.
 import hashlib
 import json
 import os
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 import requests
@@ -31,7 +31,7 @@ from lawfirm_cli.registry.models import (
 
 
 # Default configuration
-DEFAULT_CEIDG_API_BASE_URL = "https://dane.biznes.gov.pl/api/ceidg/v2"
+DEFAULT_CEIDG_API_BASE_URL = "https://dane.biznes.gov.pl/api/ceidg/v3"
 DEFAULT_TIMEOUT = 30
 
 
@@ -265,8 +265,8 @@ def _extract_ceidg_address(addr_data: Optional[Dict]) -> Optional[NormalizedAddr
         voivodeship=addr_data.get("wojewodztwo"),
         county=addr_data.get("powiat"),
         gmina=addr_data.get("gmina"),
-        city=addr_data.get("miejscowosc"),
-        postal_code=addr_data.get("kodPocztowy"),
+        city=addr_data.get("miasto") or addr_data.get("miejscowosc"),
+        postal_code=addr_data.get("kod") or addr_data.get("kodPocztowy"),
         post_office=addr_data.get("poczta"),
         street=addr_data.get("ulica"),
         building_no=addr_data.get("budynek") or addr_data.get("nrNieruchomosci"),
@@ -354,12 +354,12 @@ def normalize_ceidg_response(data: Dict[str, Any]) -> NormalizedCEIDGProfile:
     return NormalizedCEIDGProfile(
         ceidg_id=data.get("id") or data.get("identyfikatorWpisu"),
         nip=data.get("nip") or wlasciciel.get("nip"),
-        regon=data.get("regon"),
+        regon=(data.get("regon") or wlasciciel.get("regon")) or None,
         first_name=wlasciciel.get("imie") or data.get("imie"),
         last_name=wlasciciel.get("nazwisko") or data.get("nazwisko"),
         business_name=firma,
         status=status,
-        start_date=_parse_date(data.get("dataRozpoczeciaDzialalnosci")),
+        start_date=_parse_date(data.get("dataRozpoczecia") or data.get("dataRozpoczeciaDzialalnosci")),
         end_date=_parse_date(data.get("dataZakonczeniaDzialalnosci")),
         suspension_date=_parse_date(data.get("dataZawieszeniaDzialalnosci")),
         resume_date=_parse_date(data.get("dataWznowieniaDzialalnosci")),
@@ -401,7 +401,7 @@ def fetch_and_normalize_ceidg_by_nip(
         entity_id=entity_id,
         source_system="CEIDG",
         external_id=f"NIP:{nip}",
-        fetched_at=datetime.utcnow(),
+        fetched_at=datetime.now(timezone.utc),
         payload_format="json",
         payload_raw=raw_json,
         payload_hash=hashlib.sha256(raw_json.encode()).hexdigest(),
@@ -439,7 +439,7 @@ def fetch_and_normalize_ceidg_by_regon(
         entity_id=entity_id,
         source_system="CEIDG",
         external_id=f"REGON:{regon}",
-        fetched_at=datetime.utcnow(),
+        fetched_at=datetime.now(timezone.utc),
         payload_format="json",
         payload_raw=raw_json,
         payload_hash=hashlib.sha256(raw_json.encode()).hexdigest(),

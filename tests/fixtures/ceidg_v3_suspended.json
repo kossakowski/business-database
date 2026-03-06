@@ -1,0 +1,24 @@
+{
+  "id": "SUSPENDED-ID-5678",
+  "nazwa": "MAREK ZIELIŃSKI TRANSPORT",
+  "adresDzialalnosci": {
+    "ulica": "ul. Główna",
+    "budynek": "10",
+    "miasto": "Kraków",
+    "wojewodztwo": "MAŁOPOLSKIE",
+    "powiat": "Kraków",
+    "gmina": "Kraków",
+    "kraj": "PL",
+    "kod": "30-100"
+  },
+  "wlasciciel": {
+    "imie": "Marek",
+    "nazwisko": "Zieliński",
+    "nip": "6792345678",
+    "regon": "123456789"
+  },
+  "dataRozpoczecia": "2015-01-10",
+  "dataZawieszeniaDzialalnosci": "2025-06-01",
+  "status": "ZAWIESZONY",
+  "link": "https://dane.biznes.gov.pl/api/ceidg/v3/firma/SUSPENDED-ID-5678"
+}

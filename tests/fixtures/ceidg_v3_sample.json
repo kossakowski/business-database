@@ -1,0 +1,64 @@
+{
+  "id": "A1B2C3D4-E5F6-7890-ABCD-EF1234567890",
+  "nazwa": "ANNA KOWALSKA PROJEKTOWANIE WNĘTRZ",
+  "adresDzialalnosci": {
+    "ulica": "ul. Kwiatowa",
+    "budynek": "15",
+    "lokal": "3",
+    "miasto": "Wrocław",
+    "wojewodztwo": "DOLNOŚLĄSKIE",
+    "powiat": "Wrocław",
+    "gmina": "Wrocław",
+    "kraj": "PL",
+    "kod": "50-123",
+    "terc": "0264011",
+    "simc": "0986283",
+    "ulic": "12345"
+  },
+  "adresDoKorespondencji": {
+    "ulica": "ul. Pocztowa",
+    "budynek": "7",
+    "miasto": "Wrocław",
+    "wojewodztwo": "DOLNOŚLĄSKIE",
+    "powiat": "Wrocław",
+    "gmina": "Wrocław",
+    "kraj": "PL",
+    "kod": "50-200"
+  },
+  "wlasciciel": {
+    "imie": "Anna",
+    "nazwisko": "Kowalska",
+    "nip": "8991234567",
+    "regon": "380123456"
+  },
+  "dataRozpoczecia": "2021-06-15",
+  "status": "AKTYWNY",
+  "link": "https://dane.biznes.gov.pl/api/ceidg/v3/firma/A1B2C3D4-E5F6-7890-ABCD-EF1234567890",
+  "pkd": [
+    {
+      "kod": "74.10.Z",
+      "opis": "Działalność w zakresie specjalistycznego projektowania",
+      "przewazajace": true
+    },
+    {
+      "kod": "74.20.Z",
+      "opis": "Działalność fotograficzna",
+      "przewazajace": false
+    }
+  ],
+  "kontakt": {
+    "email": "anna@projektowanie.pl",
+    "stronaWww": "https://www.projektowanie-kowalska.pl",
+    "telefon": "+48501234567"
+  },
+  "dodatkoweMiejscaWykonywaniaDzialalnosci": [
+    {
+      "ulica": "ul. Rynkowa",
+      "budynek": "3",
+      "miasto": "Oława",
+      "wojewodztwo": "DOLNOŚLĄSKIE",
+      "kraj": "PL",
+      "kod": "55-200"
+    }
+  ]
+}

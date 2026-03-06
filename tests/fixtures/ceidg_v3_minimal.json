@@ -1,0 +1,14 @@
+{
+  "id": "MINIMAL-ID-1234",
+  "nazwa": "Jan Nowak",
+  "adresDzialalnosci": {},
+  "wlasciciel": {
+    "imie": "Jan",
+    "nazwisko": "Nowak",
+    "nip": "1234563218",
+    "regon": ""
+  },
+  "dataRozpoczecia": "2026-03-06",
+  "status": "AKTYWNY",
+  "link": "https://dane.biznes.gov.pl/api/ceidg/v3/firma/MINIMAL-ID-1234"
+}

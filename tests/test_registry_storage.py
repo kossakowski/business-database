@@ -2,7 +2,7 @@
 
 import json
 import pytest
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from lawfirm_cli.registry.models import (
@@ -52,7 +52,7 @@ def sample_snapshot():
         entity_id=None,  # Will be set in tests
         source_system="KRS",
         external_id="0000012345",
-        fetched_at=datetime.utcnow(),
+        fetched_at=datetime.now(timezone.utc),
         payload_format="json",
         payload_raw='{"test": "data"}',
         payload_hash="abc123hash",
@@ -261,7 +261,7 @@ class TestSnapshotStorage:
             entity_id=test_entity_id,
             source_system="KRS",
             external_id="0000011111",
-            fetched_at=datetime.utcnow(),
+            fetched_at=datetime.now(timezone.utc),
             payload_format="json",
             payload_raw='{"type": "krs"}',
             payload_hash="krs_hash",
@@ -271,7 +271,7 @@ class TestSnapshotStorage:
             entity_id=test_entity_id,
             source_system="CEIDG",
             external_id="NIP:1234567890",
-            fetched_at=datetime.utcnow(),
+            fetched_at=datetime.now(timezone.utc),
             payload_format="json",
             payload_raw='{"type": "ceidg"}',
             payload_hash="ceidg_hash",
@@ -351,7 +351,7 @@ class TestKRSProfileStorage:
             entity_id=test_entity_id,
             source_system="KRS",
             external_id="0000099999",
-            fetched_at=datetime.utcnow(),
+            fetched_at=datetime.now(timezone.utc),
             payload_format="json",
             payload_raw='{}',
             payload_hash="test_hash",
@@ -459,7 +459,7 @@ class TestCEIDGProfileStorage:
             entity_id=test_entity_id,
             source_system="CEIDG",
             external_id="NIP:9876543210",
-            fetched_at=datetime.utcnow(),
+            fetched_at=datetime.now(timezone.utc),
             payload_format="json",
             payload_raw='{}',
             payload_hash="test_hash",

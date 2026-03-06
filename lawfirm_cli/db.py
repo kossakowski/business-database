@@ -95,26 +95,38 @@ def get_cursor(
 
 
 @contextmanager
-def transaction(test: bool = False) -> Generator[Connection, None, None]:
+def transaction(test: bool = False, isolation_level: Optional[int] = None) -> Generator[Connection, None, None]:
     """Context manager for database transactions.
-    
+
     All operations within the context are wrapped in a transaction.
     Commits on success, rolls back on exception.
-    
+
     Args:
         test: If True, use test database URL.
-        
+        isolation_level: PostgreSQL isolation level constant (e.g., psycopg2.extensions.ISOLATION_LEVEL_SERIALIZABLE).
+                        If None, uses database default (READ COMMITTED).
+
     Yields:
         Database connection with active transaction.
     """
     conn = get_connection(test=test)
+    original_isolation_level = None
+
     try:
+        # Set isolation level if specified
+        if isolation_level is not None:
+            original_isolation_level = conn.isolation_level
+            conn.set_isolation_level(isolation_level)
+
         yield conn
         conn.commit()
     except Exception:
         conn.rollback()
         raise
     finally:
+        # Restore original isolation level if changed
+        if original_isolation_level is not None:
+            conn.set_isolation_level(original_isolation_level)
         conn.close()
 
 

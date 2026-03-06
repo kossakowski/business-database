@@ -126,7 +126,6 @@ CREATE TABLE public.entities (
     id uuid NOT NULL,
     entity_type text NOT NULL,
     canonical_label text NOT NULL,
-    status text DEFAULT 'ACTIVE'::text NOT NULL,
     notes text,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
@@ -290,13 +289,6 @@ CREATE INDEX idx_contacts_type ON public.contacts USING btree (contact_type);
 --
 
 CREATE INDEX idx_entities_label ON public.entities USING btree (canonical_label);
-
-
---
--- Name: idx_entities_status; Type: INDEX; Schema: public; Owner: admin
---
-
-CREATE INDEX idx_entities_status ON public.entities USING btree (status);
 
 
 --

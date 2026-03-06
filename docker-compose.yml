@@ -3,11 +3,11 @@ services:
     image: postgres:16
     container_name: lawfirm-postgres-database
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: lawfirm
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Password must be set in .env file}
+      POSTGRES_DB: ${POSTGRES_DB:-lawfirm}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 

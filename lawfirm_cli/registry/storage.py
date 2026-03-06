@@ -1,10 +1,11 @@
 """Database storage for registry snapshots and profiles."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 from psycopg2.extras import RealDictCursor
+from psycopg2.extensions import ISOLATION_LEVEL_SERIALIZABLE
 
 from lawfirm_cli.db import transaction, execute_query
 from lawfirm_cli.registry.models import (
@@ -236,7 +237,7 @@ def insert_snapshot(snapshot: RegistrySnapshot, test: bool = False) -> str:
             snapshot.entity_id,
             snapshot.source_system,
             snapshot.external_id,
-            snapshot.fetched_at or datetime.utcnow(),
+            snapshot.fetched_at or datetime.now(timezone.utc),
             snapshot.effective_date,
             snapshot.payload_format,
             snapshot.payload_raw,
@@ -315,14 +316,17 @@ def upsert_krs_profile(
     test: bool = False,
 ) -> None:
     """Insert or update KRS profile for an entity.
-    
+
+    Uses SERIALIZABLE isolation level to prevent race conditions
+    in concurrent profile update scenarios.
+
     Args:
         entity_id: Entity ID.
         profile: Normalized KRS profile.
         snapshot_id: Associated snapshot ID.
         test: If True, use test database.
     """
-    with transaction(test=test) as conn:
+    with transaction(test=test, isolation_level=ISOLATION_LEVEL_SERIALIZABLE) as conn:
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO registry_profiles_krs (
@@ -370,14 +374,17 @@ def upsert_ceidg_profile(
     test: bool = False,
 ) -> None:
     """Insert or update CEIDG profile for an entity.
-    
+
+    Uses SERIALIZABLE isolation level to prevent race conditions
+    in concurrent profile update scenarios.
+
     Args:
         entity_id: Entity ID.
         profile: Normalized CEIDG profile.
         snapshot_id: Associated snapshot ID.
         test: If True, use test database.
     """
-    with transaction(test=test) as conn:
+    with transaction(test=test, isolation_level=ISOLATION_LEVEL_SERIALIZABLE) as conn:
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO registry_profiles_ceidg (

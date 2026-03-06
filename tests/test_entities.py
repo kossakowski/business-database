@@ -1,7 +1,10 @@
 """Tests for entity CRUD operations."""
 
+import os
 import pytest
 from uuid import uuid4
+
+import psycopg2
 
 from lawfirm_cli.entities import (
     check_entities_available,
@@ -16,6 +19,30 @@ from lawfirm_cli.entities import (
     EntityNotFoundError,
     DuplicateIdentifierError,
 )
+
+
+def _check_entity_tables_exist() -> bool:
+    """Check if entity tables exist at module load time for skipif."""
+    try:
+        db_url = os.environ.get("DATABASE_URL_TEST") or os.environ.get("DATABASE_URL")
+        if not db_url:
+            return False
+
+        conn = psycopg2.connect(db_url)
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables
+                WHERE table_schema = 'public'
+                AND table_name = 'entities'
+            )
+        """)
+        result = cursor.fetchone()[0]
+        cursor.close()
+        conn.close()
+        return result
+    except Exception:
+        return False
 
 
 class TestEntitiesAvailability:
@@ -44,12 +71,12 @@ class TestEntitiesAvailability:
         assert "not yet created" in message.lower()
 
 
-@pytest.mark.skipif(True, reason="Entity tables not yet created - tests will run when schema exists")
+@pytest.mark.skipif(not _check_entity_tables_exist(), reason="Entity tables not yet created - run db/schema.sql first")
 class TestEntityCRUD:
     """Tests for entity CRUD operations.
-    
-    These tests are skipped by default since entity tables don't exist.
-    They serve as documentation and will work when tables are created.
+
+    These tests require entity tables to exist in the database.
+    Run db/schema.sql to create the necessary tables.
     """
     
     def test_create_physical_person(self, entity_tables_exist):

@@ -1,7 +1,8 @@
 """Entity CRUD operations with transaction support."""
 
+import re
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 from uuid import uuid4
 
@@ -89,7 +90,7 @@ def create_entity(
     require_entity_tables(test=test)
     
     entity_id = str(uuid4())
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     
     with transaction(test=test) as conn:
         cursor = conn.cursor()
@@ -201,9 +202,28 @@ def create_entity(
         except IntegrityError as e:
             cursor.close()
             error_msg = str(e)
+
+            # Try to extract identifier type and value from PostgreSQL error
             if "identifiers" in error_msg and "unique" in error_msg.lower():
-                # Extract identifier info from error if possible
-                raise DuplicateIdentifierError("UNKNOWN", "value")
+                # Pattern to extract key value from error like: Key (identifier_type, identifier_value)=(NIP, 1234567890)
+                key_pattern = r"Key \(identifier_type, identifier_value\)=\(([^,]+), ([^)]+)\)"
+                match = re.search(key_pattern, error_msg)
+
+                if match:
+                    identifier_type = match.group(1).strip()
+                    identifier_value = match.group(2).strip()
+                    raise DuplicateIdentifierError(identifier_type, identifier_value)
+
+                # Fallback: try to find identifier type in the identifiers list we tried to insert
+                if identifiers:
+                    # Use the first identifier that was in the list as a best guess
+                    first_ident = identifiers[0]
+                    raise DuplicateIdentifierError(
+                        first_ident.get("type", "UNKNOWN"),
+                        first_ident.get("value", "unknown")
+                    )
+
+                raise DuplicateIdentifierError("UNKNOWN", "unknown")
             raise
 
 
@@ -373,79 +393,88 @@ def update_entity(
     test: bool = False,
 ) -> None:
     """Update entity core fields.
-    
+
     Args:
         entity_id: Entity ID.
         entity_data: Fields to update.
         test: If True, use test database.
-        
+
     Raises:
         EntityNotFoundError: If entity doesn't exist.
     """
     require_entity_tables(test=test)
-    
+
+    # Whitelists for SQL injection prevention
+    ALLOWED_ENTITY_FIELDS = {"canonical_label", "notes"}
+    ALLOWED_PHYSICAL_PERSON_FIELDS = {
+        "first_name", "middle_names", "last_name",
+        "date_of_birth", "citizenship_country", "is_deceased"
+    }
+    ALLOWED_LEGAL_PERSON_FIELDS = {
+        "registered_name", "short_name", "legal_kind",
+        "legal_form_suffix", "country"
+    }
+
     # First get existing entity to know its type
     existing = get_entity(entity_id, test=test)
     entity_type = existing["entity_type"]
-    
+
     with transaction(test=test) as conn:
         cursor = conn.cursor()
-        
+
         # Update base entity
         updates = []
         params = []
-        
-        if "canonical_label" in entity_data:
-            updates.append("canonical_label = %s")
-            params.append(entity_data["canonical_label"])
-        if "notes" in entity_data:
-            updates.append("notes = %s")
-            params.append(entity_data["notes"])
-        
+
+        for field in ["canonical_label", "notes"]:
+            if field in entity_data and field in ALLOWED_ENTITY_FIELDS:
+                updates.append(f"{field} = %s")
+                params.append(entity_data[field])
+
         if updates:
             updates.append("updated_at = %s")
-            params.append(datetime.utcnow())
+            params.append(datetime.now(timezone.utc))
             params.append(entity_id)
-            
+
             cursor.execute(f"""
                 UPDATE entities SET {', '.join(updates)} WHERE id = %s
             """, params)
-        
+
         # Update type-specific table
         if entity_type == "PHYSICAL_PERSON":
             type_updates = []
             type_params = []
-            
-            for field in ["first_name", "middle_names", "last_name", 
+
+            for field in ["first_name", "middle_names", "last_name",
                          "date_of_birth", "citizenship_country", "is_deceased"]:
-                if field in entity_data:
+                if field in entity_data and field in ALLOWED_PHYSICAL_PERSON_FIELDS:
                     type_updates.append(f"{field} = %s")
                     type_params.append(entity_data[field])
-            
+
             if type_updates:
                 type_params.append(entity_id)
                 cursor.execute(f"""
-                    UPDATE physical_persons SET {', '.join(type_updates)} 
+                    UPDATE physical_persons SET {', '.join(type_updates)}
                     WHERE entity_id = %s
                 """, type_params)
-                
+
         elif entity_type == "LEGAL_PERSON":
             type_updates = []
             type_params = []
-            
+
             for field in ["registered_name", "short_name", "legal_kind",
                          "legal_form_suffix", "country"]:
-                if field in entity_data:
+                if field in entity_data and field in ALLOWED_LEGAL_PERSON_FIELDS:
                     type_updates.append(f"{field} = %s")
                     type_params.append(entity_data[field])
-            
+
             if type_updates:
                 type_params.append(entity_id)
                 cursor.execute(f"""
-                    UPDATE legal_persons SET {', '.join(type_updates)} 
+                    UPDATE legal_persons SET {', '.join(type_updates)}
                     WHERE entity_id = %s
                 """, type_params)
-        
+
         cursor.close()
 
 
@@ -489,7 +518,7 @@ def add_identifier(
                 identifier_type,
                 identifier_value,
                 registry_name,
-                datetime.utcnow(),
+                datetime.now(timezone.utc),
             ))
             cursor.close()
             return identifier_id
@@ -561,7 +590,7 @@ def add_address(
     require_entity_tables(test=test)
     
     address_id = str(uuid4())
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     
     with transaction(test=test) as conn:
         cursor = conn.cursor()
@@ -601,33 +630,34 @@ def update_address(
     test: bool = False,
 ) -> None:
     """Update an address.
-    
+
     Args:
         address_id: Address ID.
         address_data: Fields to update.
         test: If True, use test database.
     """
     require_entity_tables(test=test)
-    
-    fields = [
+
+    # Whitelist for SQL injection prevention
+    ALLOWED_ADDRESS_FIELDS = {
         "address_type", "country", "voivodeship", "county", "gmina",
         "city", "postal_code", "post_office", "street", "building_no",
         "unit_no", "additional_line", "freeform_note"
-    ]
-    
+    }
+
     updates = []
     params = []
-    
-    for field in fields:
+
+    for field in ALLOWED_ADDRESS_FIELDS:
         if field in address_data:
             updates.append(f"{field} = %s")
             params.append(address_data[field])
-    
+
     if updates:
         updates.append("updated_at = %s")
-        params.append(datetime.utcnow())
+        params.append(datetime.now(timezone.utc))
         params.append(address_id)
-        
+
         with transaction(test=test) as conn:
             cursor = conn.cursor()
             cursor.execute(f"""
@@ -690,7 +720,7 @@ def add_contact(
             contact_type,
             contact_value,
             label,
-            datetime.utcnow(),
+            datetime.now(timezone.utc),
         ))
         cursor.close()
         return contact_id
@@ -703,7 +733,7 @@ def update_contact(
     test: bool = False,
 ) -> None:
     """Update a contact.
-    
+
     Args:
         contact_id: Contact ID.
         contact_value: New value.
@@ -711,17 +741,20 @@ def update_contact(
         test: If True, use test database.
     """
     require_entity_tables(test=test)
-    
+
+    # Whitelist for SQL injection prevention
+    ALLOWED_CONTACT_FIELDS = {"contact_value", "label"}
+
     updates = []
     params = []
-    
-    if contact_value is not None:
+
+    if contact_value is not None and "contact_value" in ALLOWED_CONTACT_FIELDS:
         updates.append("contact_value = %s")
         params.append(contact_value)
-    if label is not None:
+    if label is not None and "label" in ALLOWED_CONTACT_FIELDS:
         updates.append("label = %s")
         params.append(label)
-    
+
     if updates:
         params.append(contact_id)
         with transaction(test=test) as conn:

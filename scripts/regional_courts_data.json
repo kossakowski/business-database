@@ -1,0 +1,2244 @@
+{
+  "metadata": {
+    "dane_gov_total": 319,
+    "saos_total": 318,
+    "matched": 319,
+    "unmatched": 0
+  },
+  "courts": [
+    {
+      "name": "Sąd Rejonowy w Białymstoku",
+      "district_code": "sad_okregowy_bialystok",
+      "city": "Białystok",
+      "code": "sad_rejonowy_bialymstoku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Bielsku Podlaskim",
+      "district_code": "sad_okregowy_bialystok",
+      "city": "Bielsk Podlaski",
+      "code": "sad_rejonowy_bielsku_podlaskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Sokółce",
+      "district_code": "sad_okregowy_bialystok",
+      "city": "Sokółka",
+      "code": "sad_rejonowy_sokolce",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Bielsku-Białej",
+      "district_code": "sad_okregowy_bielsko_biala",
+      "city": "Bielsko-Biała",
+      "code": "sad_rejonowy_bielsku_bialej",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Cieszynie",
+      "district_code": "sad_okregowy_bielsko_biala",
+      "city": "Cieszyn",
+      "code": "sad_rejonowy_cieszynie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Żywcu",
+      "district_code": "sad_okregowy_bielsko_biala",
+      "city": "Żywiec",
+      "code": "sad_rejonowy_zywcu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Bydgoszczy",
+      "district_code": "sad_okregowy_bydgoszcz",
+      "city": "Bydgoszcz",
+      "code": "sad_rejonowy_bydgoszczy",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Inowrocławiu",
+      "district_code": "sad_okregowy_bydgoszcz",
+      "city": "Inowrocław",
+      "code": "sad_rejonowy_inowroclawiu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Mogilnie",
+      "district_code": "sad_okregowy_bydgoszcz",
+      "city": "Mogilno",
+      "code": "sad_rejonowy_mogilnie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Nakle nad Notecią",
+      "district_code": "sad_okregowy_bydgoszcz",
+      "city": "Nakło nad Notecią",
+      "code": "sad_rejonowy_nakle_nad_notecia",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Szubinie",
+      "district_code": "sad_okregowy_bydgoszcz",
+      "city": "Szubin",
+      "code": "sad_rejonowy_szubinie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Tucholi",
+      "district_code": "sad_okregowy_bydgoszcz",
+      "city": "Tuchola",
+      "code": "sad_rejonowy_tucholi",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Świeciu",
+      "district_code": "sad_okregowy_bydgoszcz",
+      "city": "Świecie",
+      "code": "sad_rejonowy_swieciu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Żninie",
+      "district_code": "sad_okregowy_bydgoszcz",
+      "city": "Żnin",
+      "code": "sad_rejonowy_zninie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Częstochowie",
+      "district_code": "sad_okregowy_czestochowa",
+      "city": "Częstochowa",
+      "code": "sad_rejonowy_czestochowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Lublińcu",
+      "district_code": "sad_okregowy_czestochowa",
+      "city": "Lubliniec",
+      "code": "sad_rejonowy_lublincu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Myszkowie",
+      "district_code": "sad_okregowy_czestochowa",
+      "city": "Myszków",
+      "code": "sad_rejonowy_myszkowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Braniewie",
+      "district_code": "sad_okregowy_elblag",
+      "city": "Braniewo",
+      "code": "sad_rejonowy_braniewie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Działdowie",
+      "district_code": "sad_okregowy_elblag",
+      "city": "Działdów",
+      "code": "sad_rejonowy_dzialdowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Elblągu",
+      "district_code": "sad_okregowy_elblag",
+      "city": "Elbląg",
+      "code": "sad_rejonowy_elblagu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Iławie",
+      "district_code": "sad_okregowy_elblag",
+      "city": "Iława",
+      "code": "sad_rejonowy_ilawie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Nowym Mieście Lubawskim",
+      "district_code": "sad_okregowy_elblag",
+      "city": "Nowe Miasto Lubawskie",
+      "code": "sad_rejonowy_nowym_miescie_lubawskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Ostródzie",
+      "district_code": "sad_okregowy_elblag",
+      "city": "Ostród",
+      "code": "sad_rejonowy_ostrodzie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy Gdańsk-Południe w Gdańsku",
+      "district_code": "sad_okregowy_gdansk",
+      "city": "Gdańsk",
+      "code": "sad_rejonowy_gdansk_poludnie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy Gdańsk-Północ w Gdańsku",
+      "district_code": "sad_okregowy_gdansk",
+      "city": "Gdańsk",
+      "code": "sad_rejonowy_gdansk_polnoc",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Gdyni",
+      "district_code": "sad_okregowy_gdansk",
+      "city": "Gdynia",
+      "code": "sad_rejonowy_gdyni",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kartuzach",
+      "district_code": "sad_okregowy_gdansk",
+      "city": "Kartuzy",
+      "code": "sad_rejonowy_kartuzach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kościerzynie",
+      "district_code": "sad_okregowy_gdansk",
+      "city": "Kościerzyna",
+      "code": "sad_rejonowy_koscierzynie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kwidzynie",
+      "district_code": "sad_okregowy_gdansk",
+      "city": "Kwidzyn",
+      "code": "sad_rejonowy_kwidzynie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Malborku",
+      "district_code": "sad_okregowy_gdansk",
+      "city": "Malbork",
+      "code": "sad_rejonowy_malborku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Sopocie",
+      "district_code": "sad_okregowy_gdansk",
+      "city": "Sopot",
+      "code": "sad_rejonowy_sopocie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Starogardzie Gdańskim",
+      "district_code": "sad_okregowy_gdansk",
+      "city": "Starogard Gdański",
+      "code": "sad_rejonowy_starogardzie_gdanskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Tczewie",
+      "district_code": "sad_okregowy_gdansk",
+      "city": "Tczew",
+      "code": "sad_rejonowy_tczewie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Wejherowie",
+      "district_code": "sad_okregowy_gdansk",
+      "city": "Wejherów",
+      "code": "sad_rejonowy_wejherowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Gliwicach",
+      "district_code": "sad_okregowy_gliwice",
+      "city": "Gliwice",
+      "code": "sad_rejonowy_gliwicach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Rudzie Śląskiej",
+      "district_code": "sad_okregowy_gliwice",
+      "city": "Ruda Śląska",
+      "code": "sad_rejonowy_rudzie_slaskiej",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Tarnowskich Górach",
+      "district_code": "sad_okregowy_gliwice",
+      "city": "Tarnowskie Góry",
+      "code": "sad_rejonowy_tarnowskich_gorach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Zabrzu",
+      "district_code": "sad_okregowy_gliwice",
+      "city": "Zabrze",
+      "code": "sad_rejonowy_zabrzu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Gorzowie Wielkopolskim",
+      "district_code": "sad_okregowy_gorzow_wielkopolski",
+      "city": "Gorzów Wielkopolski",
+      "code": "sad_rejonowy_gorzowie_wielkopolskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Międzyrzeczu",
+      "district_code": "sad_okregowy_gorzow_wielkopolski",
+      "city": "Międzyrzecz",
+      "code": "sad_rejonowy_miedzyrzeczu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Strzelcach Krajeńskich",
+      "district_code": "sad_okregowy_gorzow_wielkopolski",
+      "city": "Strzelce Krajeńskie",
+      "code": "sad_rejonowy_strzelcach_krajenskich",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Sulęcinie",
+      "district_code": "sad_okregowy_gorzow_wielkopolski",
+      "city": "Sulęcin",
+      "code": "sad_rejonowy_sulecinie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Słubicach",
+      "district_code": "sad_okregowy_gorzow_wielkopolski",
+      "city": "Słubice",
+      "code": "sad_rejonowy_slubicach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Bolesławcu",
+      "district_code": "sad_okregowy_jelenia_gora",
+      "city": "Bolesławiec",
+      "code": "sad_rejonowy_boleslawcu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Jeleniej Górze",
+      "district_code": "sad_okregowy_jelenia_gora",
+      "city": "Jelenia Góra",
+      "code": "sad_rejonowy_jeleniej_gorze",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kamiennej Górze",
+      "district_code": "sad_okregowy_jelenia_gora",
+      "city": "Kamienna Góra",
+      "code": "sad_rejonowy_kamiennej_gorze",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Lubaniu",
+      "district_code": "sad_okregowy_jelenia_gora",
+      "city": "Lubań",
+      "code": "sad_rejonowy_lubaniu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Lwówku Śląskim",
+      "district_code": "sad_okregowy_jelenia_gora",
+      "city": "Lwówek Śląski",
+      "code": "sad_rejonowy_lwowku_slaskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Zgorzelcu",
+      "district_code": "sad_okregowy_jelenia_gora",
+      "city": "Zgorzelec",
+      "code": "sad_rejonowy_zgorzelcu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Jarocinie",
+      "district_code": "sad_okregowy_kalisz",
+      "city": "Jarocin",
+      "code": "sad_rejonowy_jarocinie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kaliszu",
+      "district_code": "sad_okregowy_kalisz",
+      "city": "Kalisz",
+      "code": "sad_rejonowy_kaliszu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Krotoszynie",
+      "district_code": "sad_okregowy_kalisz",
+      "city": "Krotoszyn",
+      "code": "sad_rejonowy_krotoszynie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kępnie",
+      "district_code": "sad_okregowy_kalisz",
+      "city": "Kępno",
+      "code": "sad_rejonowy_kepnie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Ostrowie Wielkopolskim",
+      "district_code": "sad_okregowy_kalisz",
+      "city": "Ostrów Wielkopolski",
+      "code": "sad_rejonowy_ostrowie_wielkopolskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Ostrzeszowie",
+      "district_code": "sad_okregowy_kalisz",
+      "city": "Ostrzeszów",
+      "code": "sad_rejonowy_ostrzeszowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Pleszewie",
+      "district_code": "sad_okregowy_kalisz",
+      "city": "Pleszew",
+      "code": "sad_rejonowy_pleszewie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy Katowice-Wschód w Katowicach",
+      "district_code": "sad_okregowy_katowice",
+      "city": "Katowice",
+      "code": "sad_rejonowy_katowice_wschod",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy Katowice-Zachód w Katowicach",
+      "district_code": "sad_okregowy_katowice",
+      "city": "Katowice",
+      "code": "sad_rejonowy_katowice_zachod",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Bytomiu",
+      "district_code": "sad_okregowy_katowice",
+      "city": "Bytom",
+      "code": "sad_rejonowy_bytomiu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Chorzowie",
+      "district_code": "sad_okregowy_katowice",
+      "city": "Chorzów",
+      "code": "sad_rejonowy_chorzowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Mikołowie",
+      "district_code": "sad_okregowy_katowice",
+      "city": "Mikołów",
+      "code": "sad_rejonowy_mikolowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Mysłowicach",
+      "district_code": "sad_okregowy_katowice",
+      "city": "Mysłowice",
+      "code": "sad_rejonowy_myslowicach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Pszczynie",
+      "district_code": "sad_okregowy_katowice",
+      "city": "Pszczyna",
+      "code": "sad_rejonowy_pszczynie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Siemianowicach Śląskich",
+      "district_code": "sad_okregowy_katowice",
+      "city": "Siemianowice Śląskie",
+      "code": "sad_rejonowy_siemianowicach_slaskich",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Tychach",
+      "district_code": "sad_okregowy_katowice",
+      "city": "Tychy",
+      "code": "sad_rejonowy_tychach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Busku-Zdroju",
+      "district_code": "sad_okregowy_kielce",
+      "city": "Busko-Zdrój",
+      "code": "sad_rejonowy_busku_zdroju",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Jędrzejowie",
+      "district_code": "sad_okregowy_kielce",
+      "city": "Jędrzejów",
+      "code": "sad_rejonowy_jedrzejowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kielcach",
+      "district_code": "sad_okregowy_kielce",
+      "city": "Kielce",
+      "code": "sad_rejonowy_kielcach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Końskich",
+      "district_code": "sad_okregowy_kielce",
+      "city": "Końskie",
+      "code": "sad_rejonowy_konskich",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Opatowie",
+      "district_code": "sad_okregowy_kielce",
+      "city": "Opatów",
+      "code": "sad_rejonowy_opatowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Ostrowcu Świętokrzyskim",
+      "district_code": "sad_okregowy_kielce",
+      "city": "Ostrowiec Świętokrzyski",
+      "code": "sad_rejonowy_ostrowcu_swietokrzyskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Pińczowie",
+      "district_code": "sad_okregowy_kielce",
+      "city": "Pińczów",
+      "code": "sad_rejonowy_pinczowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Sandomierzu",
+      "district_code": "sad_okregowy_kielce",
+      "city": "Sandomierz",
+      "code": "sad_rejonowy_sandomierzu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Skarżysku-Kamiennej",
+      "district_code": "sad_okregowy_kielce",
+      "city": "Skarżysko-Kamienna",
+      "code": "sad_rejonowy_skarzysku_kamiennej",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Starachowicach",
+      "district_code": "sad_okregowy_kielce",
+      "city": "Starachowice",
+      "code": "sad_rejonowy_starachowicach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Staszowie",
+      "district_code": "sad_okregowy_kielce",
+      "city": "Staszów",
+      "code": "sad_rejonowy_staszowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy we Włoszczowie",
+      "district_code": "sad_okregowy_kielce",
+      "city": "Włoszczów",
+      "code": "sad_rejonowy_wloszczowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kole",
+      "district_code": "sad_okregowy_konin",
+      "city": "Koło",
+      "code": "sad_rejonowy_kole",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Koninie",
+      "district_code": "sad_okregowy_konin",
+      "city": "Konin",
+      "code": "sad_rejonowy_koninie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Słupcy",
+      "district_code": "sad_okregowy_konin",
+      "city": "Słupca",
+      "code": "sad_rejonowy_slupcy",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Turku",
+      "district_code": "sad_okregowy_konin",
+      "city": "Turek",
+      "code": "sad_rejonowy_turku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Białogardzie",
+      "district_code": "sad_okregowy_koszalin",
+      "city": "Białogard",
+      "code": "sad_rejonowy_bialogardzie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Drawsku Pomorskim",
+      "district_code": "sad_okregowy_koszalin",
+      "city": "Drawsko Pomorskie",
+      "code": "sad_rejonowy_drawsku_pomorskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Koszalinie",
+      "district_code": "sad_okregowy_koszalin",
+      "city": "Koszalin",
+      "code": "sad_rejonowy_koszalinie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kołobrzegu",
+      "district_code": "sad_okregowy_koszalin",
+      "city": "Kołobrzeg",
+      "code": "sad_rejonowy_kolobrzegu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Szczecinku",
+      "district_code": "sad_okregowy_koszalin",
+      "city": "Szczecinek",
+      "code": "sad_rejonowy_szczecinku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Sławnie",
+      "district_code": "sad_okregowy_koszalin",
+      "city": "Sławno",
+      "code": "sad_rejonowy_slawnie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Wałczu",
+      "district_code": "sad_okregowy_koszalin",
+      "city": "Wałcz",
+      "code": "sad_rejonowy_walczu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy dla Krakowa-Krowodrzy w Krakowie",
+      "district_code": "sad_okregowy_krakow",
+      "city": "Kraków",
+      "code": "sad_rejonowy_krakowa_krowodrzy",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy dla Krakowa-Nowej Huty w Krakowie",
+      "district_code": "sad_okregowy_krakow",
+      "city": "Kraków",
+      "code": "sad_rejonowy_krakowa_nowej_huty",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy dla Krakowa-Podgórza w Krakowie",
+      "district_code": "sad_okregowy_krakow",
+      "city": "Kraków",
+      "code": "sad_rejonowy_krakowa_podgorza",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy dla Krakowa-Śródmieścia w Krakowie",
+      "district_code": "sad_okregowy_krakow",
+      "city": "Kraków",
+      "code": "sad_rejonowy_krakowa_srodmiescia",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Chrzanowie",
+      "district_code": "sad_okregowy_krakow",
+      "city": "Chrzanów",
+      "code": "sad_rejonowy_chrzanowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Miechowie",
+      "district_code": "sad_okregowy_krakow",
+      "city": "Miechów",
+      "code": "sad_rejonowy_miechowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Myślenicach",
+      "district_code": "sad_okregowy_krakow",
+      "city": "Myślenice",
+      "code": "sad_rejonowy_myslenicach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Olkuszu",
+      "district_code": "sad_okregowy_krakow",
+      "city": "Olkusz",
+      "code": "sad_rejonowy_olkuszu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Oświęcimiu",
+      "district_code": "sad_okregowy_krakow",
+      "city": "Oświęcim",
+      "code": "sad_rejonowy_oswiecimiu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Suchej Beskidzkiej",
+      "district_code": "sad_okregowy_krakow",
+      "city": "Sucha Beskidzka",
+      "code": "sad_rejonowy_suchej_beskidzkiej",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Wadowicach",
+      "district_code": "sad_okregowy_krakow",
+      "city": "Wadowice",
+      "code": "sad_rejonowy_wadowicach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Wieliczce",
+      "district_code": "sad_okregowy_krakow",
+      "city": "Wieliczka",
+      "code": "sad_rejonowy_wieliczce",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Brzozowie",
+      "district_code": "sad_okregowy_krosno",
+      "city": "Brzozów",
+      "code": "sad_rejonowy_brzozowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Jaśle",
+      "district_code": "sad_okregowy_krosno",
+      "city": "Jasło",
+      "code": "sad_rejonowy_jasle",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Krośnie",
+      "district_code": "sad_okregowy_krosno",
+      "city": "Krosno",
+      "code": "sad_rejonowy_krosnie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Lesku",
+      "district_code": "sad_okregowy_krosno",
+      "city": "Lesk",
+      "code": "sad_rejonowy_lesku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Sanoku",
+      "district_code": "sad_okregowy_krosno",
+      "city": "Sanok",
+      "code": "sad_rejonowy_sanoku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Głogowie",
+      "district_code": "sad_okregowy_legnica",
+      "city": "Głogów",
+      "code": "sad_rejonowy_glogowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Jaworze",
+      "district_code": "sad_okregowy_legnica",
+      "city": "Jawor",
+      "code": "sad_rejonowy_jaworze",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Legnicy",
+      "district_code": "sad_okregowy_legnica",
+      "city": "Legnica",
+      "code": "sad_rejonowy_legnicy",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Lubinie",
+      "district_code": "sad_okregowy_legnica",
+      "city": "Lubin",
+      "code": "sad_rejonowy_lubinie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Złotoryi",
+      "district_code": "sad_okregowy_legnica",
+      "city": "Złotoryja",
+      "code": "sad_rejonowy_zlotoryi",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy dla Łodzi-Widzewa w Łodzi",
+      "district_code": "sad_okregowy_lodz",
+      "city": "Łódź",
+      "code": "sad_rejonowy_lodzi_widzewa",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy dla Łodzi-Śródmieścia w Łodzi",
+      "district_code": "sad_okregowy_lodz",
+      "city": "Łódź",
+      "code": "sad_rejonowy_lodzi_srodmiescia",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Brzezinach",
+      "district_code": "sad_okregowy_lodz",
+      "city": "Brzeziny",
+      "code": "sad_rejonowy_brzezinach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kutnie",
+      "district_code": "sad_okregowy_lodz",
+      "city": "Kutno",
+      "code": "sad_rejonowy_kutnie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Pabianicach",
+      "district_code": "sad_okregowy_lodz",
+      "city": "Pabianice",
+      "code": "sad_rejonowy_pabianicach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Rawie Mazowieckiej",
+      "district_code": "sad_okregowy_lodz",
+      "city": "Rawa Mazowiecka",
+      "code": "sad_rejonowy_rawie_mazowieckiej",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Skierniewicach",
+      "district_code": "sad_okregowy_lodz",
+      "city": "Skierniewice",
+      "code": "sad_rejonowy_skierniewicach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Zgierzu",
+      "district_code": "sad_okregowy_lodz",
+      "city": "Zgierz",
+      "code": "sad_rejonowy_zgierzu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Łowiczu",
+      "district_code": "sad_okregowy_lodz",
+      "city": "Łowicz",
+      "code": "sad_rejonowy_lowiczu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Łęczycy",
+      "district_code": "sad_okregowy_lodz",
+      "city": "Łęczyca",
+      "code": "sad_rejonowy_leczycy",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Grajewie",
+      "district_code": "sad_okregowy_lomza",
+      "city": "Grajewo",
+      "code": "sad_rejonowy_grajewie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Wysokiem Mazowieckiem",
+      "district_code": "sad_okregowy_lomza",
+      "city": "Wysokie Mazowieckie",
+      "code": "sad_rejonowy_wysokiem_mazowieckiem",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Zambrowie",
+      "district_code": "sad_okregowy_lomza",
+      "city": "Zambrów",
+      "code": "sad_rejonowy_zambrowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Łomży",
+      "district_code": "sad_okregowy_lomza",
+      "city": "Łomża",
+      "code": "sad_rejonowy_lomzy",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy Lublin-Wschód w Lublinie z siedzibą w Świdniku",
+      "district_code": "sad_okregowy_lublin",
+      "city": "Świdnik",
+      "code": "sad_rejonowy_lublin_wschod",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy Lublin-Zachód w Lublinie",
+      "district_code": "sad_okregowy_lublin",
+      "city": "Lublin",
+      "code": "sad_rejonowy_lublin_zachod",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Białej Podlaskiej",
+      "district_code": "sad_okregowy_lublin",
+      "city": "Biała Podlaska",
+      "code": "sad_rejonowy_bialej_podlaskiej",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Chełmie",
+      "district_code": "sad_okregowy_lublin",
+      "city": "Chełm",
+      "code": "sad_rejonowy_chelmie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kraśniku",
+      "district_code": "sad_okregowy_lublin",
+      "city": "Kraśnik",
+      "code": "sad_rejonowy_krasniku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Lubartowie",
+      "district_code": "sad_okregowy_lublin",
+      "city": "Lubartów",
+      "code": "sad_rejonowy_lubartowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Opolu Lubelskim",
+      "district_code": "sad_okregowy_lublin",
+      "city": "Opole Lubelskie",
+      "code": "sad_rejonowy_opolu_lubelskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Puławach",
+      "district_code": "sad_okregowy_lublin",
+      "city": "Puławy",
+      "code": "sad_rejonowy_pulawach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Radzyniu Podlaskim",
+      "district_code": "sad_okregowy_lublin",
+      "city": "Radzyń Podlaski",
+      "code": "sad_rejonowy_radzyniu_podlaskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Rykach",
+      "district_code": "sad_okregowy_lublin",
+      "city": "Ryki",
+      "code": "sad_rejonowy_rykach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Łukowie",
+      "district_code": "sad_okregowy_lublin",
+      "city": "Łuków",
+      "code": "sad_rejonowy_lukowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy we Włodawie",
+      "district_code": "sad_okregowy_lublin",
+      "city": "Włodawa",
+      "code": "sad_rejonowy_wlodawie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Gorlicach",
+      "district_code": "sad_okregowy_nowy_sacz",
+      "city": "Gorlice",
+      "code": "sad_rejonowy_gorlicach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Limanowej",
+      "district_code": "sad_okregowy_nowy_sacz",
+      "city": "Limanowa",
+      "code": "sad_rejonowy_limanowej",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Nowym Sączu",
+      "district_code": "sad_okregowy_nowy_sacz",
+      "city": "Nowy Sącz",
+      "code": "sad_rejonowy_nowym_saczu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Nowym Targu",
+      "district_code": "sad_okregowy_nowy_sacz",
+      "city": "Nowy Targ",
+      "code": "sad_rejonowy_nowym_targu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Zakopanem",
+      "district_code": "sad_okregowy_nowy_sacz",
+      "city": "Zakopane",
+      "code": "sad_rejonowy_zakopanem",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Bartoszycach",
+      "district_code": "sad_okregowy_olsztyn",
+      "city": "Bartoszyce",
+      "code": "sad_rejonowy_bartoszycach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Biskupcu",
+      "district_code": "sad_okregowy_olsztyn",
+      "city": "Biskupiec",
+      "code": "sad_rejonowy_biskupcu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Giżycku",
+      "district_code": "sad_okregowy_olsztyn",
+      "city": "Giżycko",
+      "code": "sad_rejonowy_gizycku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kętrzynie",
+      "district_code": "sad_okregowy_olsztyn",
+      "city": "Kętrzyn",
+      "code": "sad_rejonowy_ketrzynie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Lidzbarku Warmińskim",
+      "district_code": "sad_okregowy_olsztyn",
+      "city": "Lidzbark Warmiński",
+      "code": "sad_rejonowy_lidzbarku_warminskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Mrągowie",
+      "district_code": "sad_okregowy_olsztyn",
+      "city": "Mrągów",
+      "code": "sad_rejonowy_mragowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Nidzicy",
+      "district_code": "sad_okregowy_olsztyn",
+      "city": "Nidzica",
+      "code": "sad_rejonowy_nidzicy",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Olsztynie",
+      "district_code": "sad_okregowy_olsztyn",
+      "city": "Olsztyn",
+      "code": "sad_rejonowy_olsztynie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Piszu",
+      "district_code": "sad_okregowy_olsztyn",
+      "city": "Pisz",
+      "code": "sad_rejonowy_piszu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Szczytnie",
+      "district_code": "sad_okregowy_olsztyn",
+      "city": "Szczytno",
+      "code": "sad_rejonowy_szczytnie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Brzegu",
+      "district_code": "sad_okregowy_opole",
+      "city": "Brzeg",
+      "code": "sad_rejonowy_brzegu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Głubczycach",
+      "district_code": "sad_okregowy_opole",
+      "city": "Głubczyce",
+      "code": "sad_rejonowy_glubczycach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kluczborku",
+      "district_code": "sad_okregowy_opole",
+      "city": "Kluczbork",
+      "code": "sad_rejonowy_kluczborku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kędzierzynie-Koźlu",
+      "district_code": "sad_okregowy_opole",
+      "city": "Kędzierzyn-Koźle",
+      "code": "sad_rejonowy_kedzierzynie_kozlu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Nysie",
+      "district_code": "sad_okregowy_opole",
+      "city": "Nysa",
+      "code": "sad_rejonowy_nysie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Oleśnie",
+      "district_code": "sad_okregowy_opole",
+      "city": "Oleśno",
+      "code": "sad_rejonowy_olesnie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Opolu",
+      "district_code": "sad_okregowy_opole",
+      "city": "Opole",
+      "code": "sad_rejonowy_opolu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Prudniku",
+      "district_code": "sad_okregowy_opole",
+      "city": "Prudnik",
+      "code": "sad_rejonowy_prudniku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Strzelcach Opolskich",
+      "district_code": "sad_okregowy_opole",
+      "city": "Strzelce Opolskie",
+      "code": "sad_rejonowy_strzelcach_opolskich",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Ostrowi Mazowieckiej",
+      "district_code": "sad_okregowy_ostroleka",
+      "city": "Ostrów Mazowiecka",
+      "code": "sad_rejonowy_ostrowi_mazowieckiej",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Ostrołęce",
+      "district_code": "sad_okregowy_ostroleka",
+      "city": "Ostrołęka",
+      "code": "sad_rejonowy_ostrolece",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Przasnyszu",
+      "district_code": "sad_okregowy_ostroleka",
+      "city": "Przasnysz",
+      "code": "sad_rejonowy_przasnyszu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Pułtusku",
+      "district_code": "sad_okregowy_ostroleka",
+      "city": "Pułtusk",
+      "code": "sad_rejonowy_pultusku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Wyszkowie",
+      "district_code": "sad_okregowy_ostroleka",
+      "city": "Wyszków",
+      "code": "sad_rejonowy_wyszkowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Bełchatowie",
+      "district_code": "sad_okregowy_piotrkow_trybunalski",
+      "city": "Bełchatów",
+      "code": "sad_rejonowy_belchatowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Opocznie",
+      "district_code": "sad_okregowy_piotrkow_trybunalski",
+      "city": "Opoczno",
+      "code": "sad_rejonowy_opocznie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Piotrkowie Trybunalskim",
+      "district_code": "sad_okregowy_piotrkow_trybunalski",
+      "city": "Piotrków Trybunalski",
+      "code": "sad_rejonowy_piotrkowie_trybunalskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Radomsku",
+      "district_code": "sad_okregowy_piotrkow_trybunalski",
+      "city": "Radomsk",
+      "code": "sad_rejonowy_radomsku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Tomaszowie Mazowieckim",
+      "district_code": "sad_okregowy_piotrkow_trybunalski",
+      "city": "Tomaszów Mazowiecki",
+      "code": "sad_rejonowy_tomaszowie_mazowieckim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Ciechanowie",
+      "district_code": "sad_okregowy_plock",
+      "city": "Ciechanów",
+      "code": "sad_rejonowy_ciechanowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Gostyninie",
+      "district_code": "sad_okregowy_plock",
+      "city": "Gostynin",
+      "code": "sad_rejonowy_gostyninie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Mławie",
+      "district_code": "sad_okregowy_plock",
+      "city": "Mława",
+      "code": "sad_rejonowy_mlawie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Płocku",
+      "district_code": "sad_okregowy_plock",
+      "city": "Płock",
+      "code": "sad_rejonowy_plocku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Płońsku",
+      "district_code": "sad_okregowy_plock",
+      "city": "Płońsk",
+      "code": "sad_rejonowy_plonsku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Sierpcu",
+      "district_code": "sad_okregowy_plock",
+      "city": "Sierpc",
+      "code": "sad_rejonowy_sierpcu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Sochaczewie",
+      "district_code": "sad_okregowy_plock",
+      "city": "Sochaczew",
+      "code": "sad_rejonowy_sochaczewie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Żyrardowie",
+      "district_code": "sad_okregowy_plock",
+      "city": "Żyrardów",
+      "code": "sad_rejonowy_zyrardowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy Poznań-Grunwald i Jeżyce w Poznaniu",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Poznań",
+      "code": "sad_rejonowy_poznan_grunwald_i_jezyce",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy Poznań-Nowe Miasto i Wilda w Poznaniu",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Poznań",
+      "code": "sad_rejonowy_poznan_nowe_miasto_i_wilda",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy Poznań-Stare Miasto w Poznaniu",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Poznań",
+      "code": "sad_rejonowy_poznan_stare_miasto",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Chodzieży",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Chodzież",
+      "code": "sad_rejonowy_chodziezy",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Gnieźnie",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Gniezno",
+      "code": "sad_rejonowy_gnieznie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Gostyniu",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Gostyń",
+      "code": "sad_rejonowy_gostyniu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Grodzisku Wielkopolskim",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Grodzisk Wielkopolski",
+      "code": "sad_rejonowy_grodzisku_wielkopolskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kościanie",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Kościan",
+      "code": "sad_rejonowy_koscianie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Lesznie",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Leszno",
+      "code": "sad_rejonowy_lesznie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Nowym Tomyślu",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Nowy Tomyśl",
+      "code": "sad_rejonowy_nowym_tomyslu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Obornikach",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Oborniki",
+      "code": "sad_rejonowy_obornikach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Pile",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Piła",
+      "code": "sad_rejonowy_pile",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Rawiczu",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Rawicz",
+      "code": "sad_rejonowy_rawiczu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Szamotułach",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Szamotuły",
+      "code": "sad_rejonowy_szamotulach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Trzciance",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Trzcianka",
+      "code": "sad_rejonowy_trzciance",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Wolsztynie",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Wolsztyn",
+      "code": "sad_rejonowy_wolsztynie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Wągrowcu",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Wągrowiec",
+      "code": "sad_rejonowy_wagrowcu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Złotowie",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Złotów",
+      "code": "sad_rejonowy_zlotowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Śremie",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Śrem",
+      "code": "sad_rejonowy_sremie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Środzie Wielkopolskiej",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Środa Wielkopolska",
+      "code": "sad_rejonowy_srodzie_wielkopolskiej",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy we Wrześni",
+      "district_code": "sad_okregowy_poznan",
+      "city": "Września",
+      "code": "sad_rejonowy_wrzesni",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Jarosławiu",
+      "district_code": "sad_okregowy_przemysl",
+      "city": "Jarosław",
+      "code": "sad_rejonowy_jaroslawiu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Lubaczowie",
+      "district_code": "sad_okregowy_przemysl",
+      "city": "Lubaczów",
+      "code": "sad_rejonowy_lubaczowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Przemyślu",
+      "district_code": "sad_okregowy_przemysl",
+      "city": "Przemyśl",
+      "code": "sad_rejonowy_przemyslu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Przeworsku",
+      "district_code": "sad_okregowy_przemysl",
+      "city": "Przeworsk",
+      "code": "sad_rejonowy_przeworsku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Grójcu",
+      "district_code": "sad_okregowy_radom",
+      "city": "Grójec",
+      "code": "sad_rejonowy_grojcu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kozienicach",
+      "district_code": "sad_okregowy_radom",
+      "city": "Kozienice",
+      "code": "sad_rejonowy_kozienicach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Lipsku",
+      "district_code": "sad_okregowy_radom",
+      "city": "Lipsk",
+      "code": "sad_rejonowy_lipsku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Przysusze",
+      "district_code": "sad_okregowy_radom",
+      "city": "Przysucha",
+      "code": "sad_rejonowy_przysusze",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Radomiu",
+      "district_code": "sad_okregowy_radom",
+      "city": "Radom",
+      "code": "sad_rejonowy_radomiu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Szydłowcu",
+      "district_code": "sad_okregowy_radom",
+      "city": "Szydłowiec",
+      "code": "sad_rejonowy_szydlowcu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Zwoleniu",
+      "district_code": "sad_okregowy_radom",
+      "city": "Zwoleń",
+      "code": "sad_rejonowy_zwoleniu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Jastrzębiu-Zdroju",
+      "district_code": "sad_okregowy_rybnik",
+      "city": "Jastrzębie-Zdrój",
+      "code": "sad_rejonowy_jastrzebiu_zdroju",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Raciborzu",
+      "district_code": "sad_okregowy_rybnik",
+      "city": "Racibórz",
+      "code": "sad_rejonowy_raciborzu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Rybniku",
+      "district_code": "sad_okregowy_rybnik",
+      "city": "Rybnik",
+      "code": "sad_rejonowy_rybniku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Wodzisławiu Śląskim",
+      "district_code": "sad_okregowy_rybnik",
+      "city": "Wodzisław Śląski",
+      "code": "sad_rejonowy_wodzislawiu_slaskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Żorach",
+      "district_code": "sad_okregowy_rybnik",
+      "city": "Żory",
+      "code": "sad_rejonowy_zorach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Dębicy",
+      "district_code": "sad_okregowy_rzeszow",
+      "city": "Dębica",
+      "code": "sad_rejonowy_debicy",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Leżajsku",
+      "district_code": "sad_okregowy_rzeszow",
+      "city": "Leżajsk",
+      "code": "sad_rejonowy_lezajsku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Ropczycach",
+      "district_code": "sad_okregowy_rzeszow",
+      "city": "Ropczyce",
+      "code": "sad_rejonowy_ropczycach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Rzeszowie",
+      "district_code": "sad_okregowy_rzeszow",
+      "city": "Rzeszów",
+      "code": "sad_rejonowy_rzeszowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Strzyżowie",
+      "district_code": "sad_okregowy_rzeszow",
+      "city": "Strzyżów",
+      "code": "sad_rejonowy_strzyzowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Łańcucie",
+      "district_code": "sad_okregowy_rzeszow",
+      "city": "Łańcut",
+      "code": "sad_rejonowy_lancucie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Garwolinie",
+      "district_code": "sad_okregowy_siedlce",
+      "city": "Garwolin",
+      "code": "sad_rejonowy_garwolinie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Mińsku Mazowieckim",
+      "district_code": "sad_okregowy_siedlce",
+      "city": "Mińsk Mazowiecki",
+      "code": "sad_rejonowy_minsku_mazowieckim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Siedlcach",
+      "district_code": "sad_okregowy_siedlce",
+      "city": "Siedlce",
+      "code": "sad_rejonowy_siedlcach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Sokołowie Podlaskim",
+      "district_code": "sad_okregowy_siedlce",
+      "city": "Sokołów Podlaski",
+      "code": "sad_rejonowy_sokolowie_podlaskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Węgrowie",
+      "district_code": "sad_okregowy_siedlce",
+      "city": "Węgrów",
+      "code": "sad_rejonowy_wegrowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Sieradzu",
+      "district_code": "sad_okregowy_sieradz",
+      "city": "Sieradz",
+      "code": "sad_rejonowy_sieradzu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Wieluniu",
+      "district_code": "sad_okregowy_sieradz",
+      "city": "Wieluń",
+      "code": "sad_rejonowy_wieluniu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Zduńskiej Woli",
+      "district_code": "sad_okregowy_sieradz",
+      "city": "Zduńska Wola",
+      "code": "sad_rejonowy_zdunskiej_woli",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Łasku",
+      "district_code": "sad_okregowy_sieradz",
+      "city": "Łask",
+      "code": "sad_rejonowy_lasku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Bytowie",
+      "district_code": "sad_okregowy_slupsk",
+      "city": "Bytów",
+      "code": "sad_rejonowy_bytowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Chojnicach",
+      "district_code": "sad_okregowy_slupsk",
+      "city": "Chojnice",
+      "code": "sad_rejonowy_chojnicach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Człuchowie",
+      "district_code": "sad_okregowy_slupsk",
+      "city": "Człuchów",
+      "code": "sad_rejonowy_czluchowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Lęborku",
+      "district_code": "sad_okregowy_slupsk",
+      "city": "Lębork",
+      "code": "sad_rejonowy_leborku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Miastku",
+      "district_code": "sad_okregowy_slupsk",
+      "city": "Miastko",
+      "code": "sad_rejonowy_miastku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Słupsku",
+      "district_code": "sad_okregowy_slupsk",
+      "city": "Słupsk",
+      "code": "sad_rejonowy_slupsku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Będzinie",
+      "district_code": "sad_okregowy_sosnowiec",
+      "city": "Będzin",
+      "code": "sad_rejonowy_bedzinie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Czeladzi",
+      "district_code": "sad_okregowy_sosnowiec",
+      "city": "Czeladź",
+      "code": "sad_rejonowy_czeladz",
+      "source": "manual"
+    },
+    {
+      "name": "Sąd Rejonowy w Dąbrowie Górniczej",
+      "district_code": "sad_okregowy_sosnowiec",
+      "city": "Dąbrowa Górnicza",
+      "code": "sad_rejonowy_dabrowie_gorniczej",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Jaworznie",
+      "district_code": "sad_okregowy_sosnowiec",
+      "city": "Jaworzno",
+      "code": "sad_rejonowy_jaworznie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Sosnowcu",
+      "district_code": "sad_okregowy_sosnowiec",
+      "city": "Sosnowiec",
+      "code": "sad_rejonowy_sosnowcu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Zawierciu",
+      "district_code": "sad_okregowy_sosnowiec",
+      "city": "Zawiercie",
+      "code": "sad_rejonowy_zawierciu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Augustowie",
+      "district_code": "sad_okregowy_suwalki",
+      "city": "Augustów",
+      "code": "sad_rejonowy_augustowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Ełku",
+      "district_code": "sad_okregowy_suwalki",
+      "city": "Ełk",
+      "code": "sad_rejonowy_elku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Olecku",
+      "district_code": "sad_okregowy_suwalki",
+      "city": "Olecko",
+      "code": "sad_rejonowy_olecku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Suwałkach",
+      "district_code": "sad_okregowy_suwalki",
+      "city": "Suwałki",
+      "code": "sad_rejonowy_suwalkach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Dzierżoniowie",
+      "district_code": "sad_okregowy_swidnica",
+      "city": "Dzierżoniów",
+      "code": "sad_rejonowy_dzierzoniowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kłodzku",
+      "district_code": "sad_okregowy_swidnica",
+      "city": "Kłodzko",
+      "code": "sad_rejonowy_klodzku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Wałbrzychu",
+      "district_code": "sad_okregowy_swidnica",
+      "city": "Wałbrzych",
+      "code": "sad_rejonowy_walbrzychu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Ząbkowicach Śląskich",
+      "district_code": "sad_okregowy_swidnica",
+      "city": "Ząbkowice Śląskie",
+      "code": "sad_rejonowy_zabkowicach_slaskich",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Świdnicy",
+      "district_code": "sad_okregowy_swidnica",
+      "city": "Świdnica",
+      "code": "sad_rejonowy_swidnicy",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy Szczecin-Centrum w Szczecinie",
+      "district_code": "sad_okregowy_szczecin",
+      "city": "Szczecin",
+      "code": "sad_rejonowy_szczecin_centrum",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy Szczecin-Prawobrzeże i Zachód w Szczecinie",
+      "district_code": "sad_okregowy_szczecin",
+      "city": "Szczecin",
+      "code": "sad_rejonowy_szczecin_prawobrzeze_i_zachod",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Choszcznie",
+      "district_code": "sad_okregowy_szczecin",
+      "city": "Choszczno",
+      "code": "sad_rejonowy_choszcznie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Goleniowie",
+      "district_code": "sad_okregowy_szczecin",
+      "city": "Goleniów",
+      "code": "sad_rejonowy_goleniowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Gryficach",
+      "district_code": "sad_okregowy_szczecin",
+      "city": "Gryfice",
+      "code": "sad_rejonowy_gryficach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Gryfinie",
+      "district_code": "sad_okregowy_szczecin",
+      "city": "Gryfino",
+      "code": "sad_rejonowy_gryfinie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kamieniu Pomorskim",
+      "district_code": "sad_okregowy_szczecin",
+      "city": "Kamień Pomorski",
+      "code": "sad_rejonowy_kamieniu_pomorskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Myśliborzu",
+      "district_code": "sad_okregowy_szczecin",
+      "city": "Myślibórz",
+      "code": "sad_rejonowy_mysliborzu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Stargardzie",
+      "district_code": "sad_okregowy_szczecin",
+      "city": "Stargard",
+      "code": "sad_rejonowy_stargardzie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Łobzie",
+      "district_code": "sad_okregowy_szczecin",
+      "city": "Łobez",
+      "code": "sad_rejonowy_lobzie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Świnoujściu",
+      "district_code": "sad_okregowy_szczecin",
+      "city": "Świnoujście",
+      "code": "sad_rejonowy_swinoujsciu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Kolbuszowej",
+      "district_code": "sad_okregowy_tarnobrzeg",
+      "city": "Kolbuszowa",
+      "code": "sad_rejonowy_kolbuszowej",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Mielcu",
+      "district_code": "sad_okregowy_tarnobrzeg",
+      "city": "Mielec",
+      "code": "sad_rejonowy_mielcu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Nisku",
+      "district_code": "sad_okregowy_tarnobrzeg",
+      "city": "Nisk",
+      "code": "sad_rejonowy_nisku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Stalowej Woli",
+      "district_code": "sad_okregowy_tarnobrzeg",
+      "city": "Stalowa Wola",
+      "code": "sad_rejonowy_stalowej_woli",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Tarnobrzegu",
+      "district_code": "sad_okregowy_tarnobrzeg",
+      "city": "Tarnobrzeg",
+      "code": "sad_rejonowy_tarnobrzegu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Bochni",
+      "district_code": "sad_okregowy_tarnow",
+      "city": "Bochnia",
+      "code": "sad_rejonowy_bochni",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Brzesku",
+      "district_code": "sad_okregowy_tarnow",
+      "city": "Brzesk",
+      "code": "sad_rejonowy_brzesku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Dąbrowie Tarnowskiej",
+      "district_code": "sad_okregowy_tarnow",
+      "city": "Dąbrowa Tarnowska",
+      "code": "sad_rejonowy_dabrowie_tarnowskiej",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Tarnowie",
+      "district_code": "sad_okregowy_tarnow",
+      "city": "Tarnów",
+      "code": "sad_rejonowy_tarnowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Brodnicy",
+      "district_code": "sad_okregowy_torun",
+      "city": "Brodnica",
+      "code": "sad_rejonowy_brodnicy",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Chełmnie",
+      "district_code": "sad_okregowy_torun",
+      "city": "Chełmno",
+      "code": "sad_rejonowy_chelmnie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Golubiu-Dobrzyniu",
+      "district_code": "sad_okregowy_torun",
+      "city": "Golubiu-Dobrzyń",
+      "code": "sad_rejonowy_golubiu_dobrzyniu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Grudziądzu",
+      "district_code": "sad_okregowy_torun",
+      "city": "Grudziądz",
+      "code": "sad_rejonowy_grudziadzu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Toruniu",
+      "district_code": "sad_okregowy_torun",
+      "city": "Toruń",
+      "code": "sad_rejonowy_toruniu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Wąbrzeźnie",
+      "district_code": "sad_okregowy_torun",
+      "city": "Wąbrzeźno",
+      "code": "sad_rejonowy_wabrzeznie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy dla Warszawy-Mokotowa w Warszawie",
+      "district_code": "sad_okregowy_warszawa",
+      "city": "Warszawa",
+      "code": "sad_rejonowy_warszawy_mokotowa",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy dla Warszawy-Woli w Warszawie",
+      "district_code": "sad_okregowy_warszawa",
+      "city": "Warszawa",
+      "code": "sad_rejonowy_warszawy_woli",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy dla Warszawy-Śródmieścia w Warszawie",
+      "district_code": "sad_okregowy_warszawa",
+      "city": "Warszawa",
+      "code": "sad_rejonowy_warszawy_srodmiescia",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy dla Warszawy-Żoliborza w Warszawie",
+      "district_code": "sad_okregowy_warszawa",
+      "city": "Warszawa",
+      "code": "sad_rejonowy_warszawy_zoliborza",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy dla miasta stołecznego Warszawy w Warszawie",
+      "district_code": "sad_okregowy_warszawa",
+      "city": "Warszawa",
+      "code": "sad_rejonowy_warszawa_miasto_stoleczne",
+      "source": "manual"
+    },
+    {
+      "name": "Sąd Rejonowy w Grodzisku Mazowieckim",
+      "district_code": "sad_okregowy_warszawa",
+      "city": "Grodzisk Mazowiecki",
+      "code": "sad_rejonowy_grodzisku_mazowieckim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Piasecznie",
+      "district_code": "sad_okregowy_warszawa",
+      "city": "Piaseczno",
+      "code": "sad_rejonowy_piasecznie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Pruszkowie",
+      "district_code": "sad_okregowy_warszawa",
+      "city": "Pruszków",
+      "code": "sad_rejonowy_pruszkowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy dla Warszawy Pragi-Południe w Warszawie",
+      "district_code": "sad_okregowy_warszawa_praga",
+      "city": "Warszawa",
+      "code": "sad_rejonowy_warszawy_pragi_poludnie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy dla Warszawy Pragi-Północ w Warszawie",
+      "district_code": "sad_okregowy_warszawa_praga",
+      "city": "Warszawa",
+      "code": "sad_rejonowy_warszawy_pragi_polnoc",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Legionowie",
+      "district_code": "sad_okregowy_warszawa_praga",
+      "city": "Legionów",
+      "code": "sad_rejonowy_legionowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Nowym Dworze Mazowieckim",
+      "district_code": "sad_okregowy_warszawa_praga",
+      "city": "Nowy Dwór Mazowiecki",
+      "code": "sad_rejonowy_nowym_dworze_mazowieckim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Otwocku",
+      "district_code": "sad_okregowy_warszawa_praga",
+      "city": "Otwock",
+      "code": "sad_rejonowy_otwocku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Wołominie",
+      "district_code": "sad_okregowy_warszawa_praga",
+      "city": "Wołomin",
+      "code": "sad_rejonowy_wolominie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Aleksandrowie Kujawskim",
+      "district_code": "sad_okregowy_wloclawek",
+      "city": "Aleksandrów Kujawski",
+      "code": "sad_rejonowy_aleksandrowie_kujawskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Lipnie",
+      "district_code": "sad_okregowy_wloclawek",
+      "city": "Lipno",
+      "code": "sad_rejonowy_lipnie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Radziejowie",
+      "district_code": "sad_okregowy_wloclawek",
+      "city": "Radziejów",
+      "code": "sad_rejonowy_radziejowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Rypinie",
+      "district_code": "sad_okregowy_wloclawek",
+      "city": "Rypin",
+      "code": "sad_rejonowy_rypinie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy we Włocławku",
+      "district_code": "sad_okregowy_wloclawek",
+      "city": "Włocławek",
+      "code": "sad_rejonowy_wloclawku",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy dla Wrocławia-Fabrycznej we Wrocławiu",
+      "district_code": "sad_okregowy_wroclaw",
+      "city": "Wrocław",
+      "code": "sad_rejonowy_wroclawia_fabrycznej",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy dla Wrocławia-Krzyków we Wrocławiu",
+      "district_code": "sad_okregowy_wroclaw",
+      "city": "Wrocław",
+      "code": "sad_rejonowy_wroclawia_krzykow",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy dla Wrocławia-Śródmieścia we Wrocławiu",
+      "district_code": "sad_okregowy_wroclaw",
+      "city": "Wrocław",
+      "code": "sad_rejonowy_wroclawia_srodmiescia",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Miliczu",
+      "district_code": "sad_okregowy_wroclaw",
+      "city": "Milicz",
+      "code": "sad_rejonowy_miliczu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Oleśnicy",
+      "district_code": "sad_okregowy_wroclaw",
+      "city": "Oleśnica",
+      "code": "sad_rejonowy_olesnicy",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Oławie",
+      "district_code": "sad_okregowy_wroclaw",
+      "city": "Oława",
+      "code": "sad_rejonowy_olawie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Strzelinie",
+      "district_code": "sad_okregowy_wroclaw",
+      "city": "Strzelin",
+      "code": "sad_rejonowy_strzelinie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Trzebnicy",
+      "district_code": "sad_okregowy_wroclaw",
+      "city": "Trzebnica",
+      "code": "sad_rejonowy_trzebnicy",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Wołowie",
+      "district_code": "sad_okregowy_wroclaw",
+      "city": "Wołów",
+      "code": "sad_rejonowy_wolowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Środzie Śląskiej",
+      "district_code": "sad_okregowy_wroclaw",
+      "city": "Środa Śląska",
+      "code": "sad_rejonowy_srodzie_slaskiej",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Biłgoraju",
+      "district_code": "sad_okregowy_zamosc",
+      "city": "Biłgoraj",
+      "code": "sad_rejonowy_bilgoraju",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Hrubieszowie",
+      "district_code": "sad_okregowy_zamosc",
+      "city": "Hrubieszów",
+      "code": "sad_rejonowy_hrubieszowie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Janowie Lubelskim",
+      "district_code": "sad_okregowy_zamosc",
+      "city": "Janów Lubelski",
+      "code": "sad_rejonowy_janowie_lubelskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Krasnymstawie",
+      "district_code": "sad_okregowy_zamosc",
+      "city": "Krasnystaw",
+      "code": "sad_rejonowy_krasnymstawie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Tomaszowie Lubelskim",
+      "district_code": "sad_okregowy_zamosc",
+      "city": "Tomaszów Lubelski",
+      "code": "sad_rejonowy_tomaszowie_lubelskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Zamościu",
+      "district_code": "sad_okregowy_zamosc",
+      "city": "Zamość",
+      "code": "sad_rejonowy_zamosciu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Krośnie Odrzańskim",
+      "district_code": "sad_okregowy_zielona_gora",
+      "city": "Krosno Odrzańskie",
+      "code": "sad_rejonowy_krosnie_odrzanskim",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Nowej Soli",
+      "district_code": "sad_okregowy_zielona_gora",
+      "city": "Nowa Sól",
+      "code": "sad_rejonowy_nowej_soli",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Zielonej Górze",
+      "district_code": "sad_okregowy_zielona_gora",
+      "city": "Zielona Góra",
+      "code": "sad_rejonowy_zielonej_gorze",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Świebodzinie",
+      "district_code": "sad_okregowy_zielona_gora",
+      "city": "Świebodzin",
+      "code": "sad_rejonowy_swiebodzinie",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Żaganiu",
+      "district_code": "sad_okregowy_zielona_gora",
+      "city": "Żagań",
+      "code": "sad_rejonowy_zaganiu",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy w Żarach",
+      "district_code": "sad_okregowy_zielona_gora",
+      "city": "Żary",
+      "code": "sad_rejonowy_zarach",
+      "source": "saos+dane_gov"
+    },
+    {
+      "name": "Sąd Rejonowy we Wschowie",
+      "district_code": "sad_okregowy_zielona_gora",
+      "city": "Wschów",
+      "code": "sad_rejonowy_wschowie",
+      "source": "saos+dane_gov"
+    }
+  ],
+  "unmatched_names": []
+}

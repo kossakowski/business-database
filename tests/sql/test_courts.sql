@@ -50,15 +50,62 @@ BEGIN
     CALL assert(cnt = 47, 'Should have 47 District Courts');
 
     -- Check Hierarchy (Sample: Warsaw District -> Warsaw Appeal)
-    SELECT count(*) INTO cnt 
+    SELECT count(*) INTO cnt
     FROM courts.courts d
     JOIN courts.courts a ON d.parent_id = a.id
-    WHERE d.specific_district = 'sad_okregowy_warszawa' 
+    WHERE d.specific_district = 'sad_okregowy_warszawa'
       AND a.specific_appeal = 'sad_apelacyjny_warszawa';
     CALL assert(cnt = 1, 'District Warsaw should be child of Appeal Warsaw');
 
+    -- Check Regional Courts
+    SELECT count(*) INTO cnt FROM courts.courts WHERE kind = 'regional';
+    CALL assert(cnt = 319, 'Should have 319 Regional Courts');
+
+    -- Check Regional Court Lookup
+    SELECT count(*) INTO cnt FROM courts.regional_court_lookup;
+    CALL assert(cnt = 319, 'Lookup table should have 319 entries');
+
+    -- Check Total Courts (1 + 11 + 47 + 319 = 378)
+    SELECT count(*) INTO cnt FROM courts.courts;
+    CALL assert(cnt = 378, 'Should have 378 total courts (1+11+47+319)');
+
+    -- Check All 47 Districts Have At Least 1 Regional Court
+    SELECT count(DISTINCT parent_id) INTO cnt FROM courts.courts WHERE kind = 'regional';
+    CALL assert(cnt = 47, 'All 47 districts should have regional courts');
+
+    -- Check Regional Hierarchy (Sample: Białystok Regional -> Białystok District)
+    SELECT count(*) INTO cnt
+    FROM courts.courts r
+    JOIN courts.courts d ON r.parent_id = d.id
+    WHERE r.specific_regional_code = 'sad_rejonowy_bialymstoku'
+      AND d.specific_district = 'sad_okregowy_bialystok';
+    CALL assert(cnt = 1, 'SR Białystok should be child of SO Białystok');
+
+    -- Check Rybnik district reassignment (newer district, est. 2020)
+    SELECT count(*) INTO cnt
+    FROM courts.courts r
+    JOIN courts.courts d ON r.parent_id = d.id
+    WHERE r.specific_regional_code = 'sad_rejonowy_rybniku'
+      AND d.specific_district = 'sad_okregowy_rybnik';
+    CALL assert(cnt = 1, 'SR Rybnik should be child of SO Rybnik');
+
+    -- Check Sosnowiec district reassignment (newer district, est. 2022)
+    SELECT count(*) INTO cnt
+    FROM courts.courts r
+    JOIN courts.courts d ON r.parent_id = d.id
+    WHERE r.specific_regional_code = 'sad_rejonowy_sosnowcu'
+      AND d.specific_district = 'sad_okregowy_sosnowiec';
+    CALL assert(cnt = 1, 'SR Sosnowiec should be child of SO Sosnowiec');
+
+    -- Check No Orphan Regional Courts (all have valid district parent)
+    SELECT count(*) INTO cnt
+    FROM courts.courts r
+    LEFT JOIN courts.courts d ON r.parent_id = d.id
+    WHERE r.kind = 'regional' AND (d.id IS NULL OR d.kind != 'district');
+    CALL assert(cnt = 0, 'No orphan regional courts');
+
     -- 3. Negative Testing (Constraints & Triggers)
-    
+
     -- A. Insert District without Parent (Should Fail)
     BEGIN
         INSERT INTO courts.courts (kind, specific_district, name) VALUES ('district', 'sad_okregowy_warszawa', 'Invalid');
@@ -68,13 +115,15 @@ BEGIN
     END;
 
     -- B. Insert Regional with Wrong Parent Kind (Appeal instead of District)
+    -- Use a test code not in the lookup table
     BEGIN
         SELECT id INTO v_parent_id FROM courts.courts WHERE kind = 'appeal' LIMIT 1;
+        INSERT INTO courts.regional_court_lookup (code, name, district_code, city)
+        VALUES ('sad_rejonowy_test_b', 'Test Court B', 'sad_okregowy_warszawa', 'Test');
         INSERT INTO courts.courts (kind, specific_regional_code, parent_id, name)
-        VALUES ('regional', 'sad_rejonowy_warszawa_mokotow', v_parent_id, 'Fail');
+        VALUES ('regional', 'sad_rejonowy_test_b', v_parent_id, 'Fail');
         RAISE EXCEPTION 'Trigger Check Failed: Regional parent must be District';
     EXCEPTION WHEN raise_exception THEN
-        -- Expected our trigger to raise exception
         IF SQLERRM LIKE '%Regional court must belong to a District court%' THEN
              RAISE NOTICE 'PASS: Detected wrong parent kind for Regional';
         ELSE
@@ -83,12 +132,13 @@ BEGIN
     END;
 
     -- C. Insert Regional with Correct Kind but Wrong Specific District
-    -- Trying to attach Lublin Regional to Warsaw District
+    -- Use a test code assigned to Lublin but try to attach to Warsaw
     BEGIN
         SELECT id INTO v_parent_id FROM courts.courts WHERE specific_district = 'sad_okregowy_warszawa';
-        -- 'sad_rejonowy_lublin_zachod' belongs to Lublin District in lookup
+        INSERT INTO courts.regional_court_lookup (code, name, district_code, city)
+        VALUES ('sad_rejonowy_test_c', 'Test Court C', 'sad_okregowy_lublin', 'Test');
         INSERT INTO courts.courts (kind, specific_regional_code, parent_id, name)
-        VALUES ('regional', 'sad_rejonowy_lublin_zachod', v_parent_id, 'Fail');
+        VALUES ('regional', 'sad_rejonowy_test_c', v_parent_id, 'Fail');
         RAISE EXCEPTION 'Trigger Check Failed: Regional parent must match lookup district';
     EXCEPTION WHEN raise_exception THEN
         IF SQLERRM LIKE '%Regional court parent (%) does not match%' THEN

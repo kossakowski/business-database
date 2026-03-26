@@ -263,15 +263,17 @@ def _fetch_registry_data_for_creation(entity_type: str) -> tuple:
     return prefilled_data, identifiers, address, contacts, used_registry
 
 
-@click.group()
+@click.group(invoke_without_command=True)
 @click.version_option(version="0.1.0", prog_name="lawfirm-cli")
-def cli():
+@click.pass_context
+def cli(ctx):
     """Law Firm CLI - Entity Management Tool.
-    
+
     A command-line tool for managing entities (persons and legal entities)
     in the law firm database.
     """
-    pass
+    if ctx.invoked_subcommand is None:
+        ctx.invoke(interactive_menu)
 
 
 # =============================================================================

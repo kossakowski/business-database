@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-legaldb = "lawfirm_cli.commands:main"
+lawfirm = "lawfirm_cli.commands:main"
 
 [tool.setuptools.packages.find]
 include = ["lawfirm_cli*"]

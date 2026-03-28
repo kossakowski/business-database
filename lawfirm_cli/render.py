@@ -192,6 +192,7 @@ def render_entity_detail(
             ("First Name", entity.get("first_name", "—")),
             ("Middle Names", entity.get("middle_names", "—")),
             ("Last Name", entity.get("last_name", "—")),
+            ("Business Name", entity.get("business_name", "—")),
             ("Date of Birth", entity.get("date_of_birth", "—")),
             ("Citizenship", entity.get("citizenship_country", "—")),
             ("Deceased", "Yes" if entity.get("is_deceased") else "No"),

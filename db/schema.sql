@@ -466,7 +466,8 @@ CREATE TABLE public.physical_persons (
     last_name text NOT NULL,
     date_of_birth date,
     citizenship_country text DEFAULT 'PL'::text,
-    is_deceased boolean DEFAULT false NOT NULL
+    is_deceased boolean DEFAULT false NOT NULL,
+    business_name text
 );
 
 

@@ -220,7 +220,10 @@ def _fetch_registry_data_for_creation(entity_type: str) -> tuple:
                                 prefilled_data["first_name"] = profile.first_name
                             if profile.last_name:
                                 prefilled_data["last_name"] = profile.last_name
-                            if profile.first_name and profile.last_name:
+                            if profile.business_name:
+                                prefilled_data["business_name"] = profile.business_name
+                                prefilled_data["canonical_label"] = profile.business_name
+                            elif profile.first_name and profile.last_name:
                                 prefilled_data["canonical_label"] = f"{profile.first_name} {profile.last_name}"
                             prefilled_data["citizenship_country"] = "PL"
                             prefilled_data["is_deceased"] = False
@@ -586,6 +589,7 @@ def _update_type_specific_fields(entity_id: str, existing: dict):
         data["first_name"] = prompt_field("person.first_name", existing.get("first_name"))
         data["middle_names"] = prompt_field("person.middle_names", existing.get("middle_names"))
         data["last_name"] = prompt_field("person.last_name", existing.get("last_name"))
+        data["business_name"] = prompt_field("person.business_name", existing.get("business_name"))
         data["date_of_birth"] = prompt_field("person.date_of_birth", existing.get("date_of_birth"))
         data["citizenship_country"] = prompt_field("person.citizenship_country", existing.get("citizenship_country"))
         is_deceased = prompt_field("person.is_deceased", str(existing.get("is_deceased", False)).lower())

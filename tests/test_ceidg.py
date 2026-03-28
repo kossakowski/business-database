@@ -729,10 +729,12 @@ class TestCEIDGProposalExistingData:
                        if i.identifier_type == "REGON" and i.action == ProposalAction.ADD]
         assert len(regon_props) == 1
 
-    def test_does_not_overwrite_canonical_label(self, populated_physical_entity, ceidg_v3_sample):
+    def test_updates_canonical_label_to_business_name(self, populated_physical_entity, ceidg_v3_sample):
+        """canonical_label should be updated to business_name from CEIDG for invoicing."""
         profile = self._make_profile(ceidg_v3_sample)
         proposal = generate_ceidg_proposal(populated_physical_entity, profile)
-        assert "canonical_label" not in proposal.core_updates
+        assert "canonical_label" in proposal.core_updates
+        assert proposal.core_updates["canonical_label"] == profile.business_name
 
     def test_address_update_not_add(self, populated_physical_entity, ceidg_v3_sample):
         profile = self._make_profile(ceidg_v3_sample)

@@ -116,8 +116,9 @@ def create_entity(
                 cursor.execute("""
                     INSERT INTO physical_persons (
                         entity_id, first_name, middle_names, last_name,
-                        date_of_birth, citizenship_country, is_deceased
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+                        date_of_birth, citizenship_country, is_deceased,
+                        business_name
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """, (
                     entity_id,
                     entity_data.get("first_name"),
@@ -126,6 +127,7 @@ def create_entity(
                     entity_data.get("date_of_birth"),
                     entity_data.get("citizenship_country"),
                     entity_data.get("is_deceased", False),
+                    entity_data.get("business_name"),
                 ))
             elif entity_type == "LEGAL_PERSON":
                 cursor.execute("""
@@ -303,8 +305,9 @@ def list_entities(
             OR pp.middle_names ILIKE %s
             OR pp.last_name ILIKE %s
             OR CONCAT(pp.first_name, ' ', pp.last_name) ILIKE %s
+            OR pp.business_name ILIKE %s
         )"""
-        params.extend([search_pattern] * 7)
+        params.extend([search_pattern] * 8)
     
     query += " ORDER BY e.created_at DESC LIMIT %s OFFSET %s"
     params.extend([limit, offset])
@@ -408,7 +411,8 @@ def update_entity(
     ALLOWED_ENTITY_FIELDS = {"canonical_label", "notes"}
     ALLOWED_PHYSICAL_PERSON_FIELDS = {
         "first_name", "middle_names", "last_name",
-        "date_of_birth", "citizenship_country", "is_deceased"
+        "date_of_birth", "citizenship_country", "is_deceased",
+        "business_name"
     }
     ALLOWED_LEGAL_PERSON_FIELDS = {
         "registered_name", "short_name", "legal_kind",
@@ -446,7 +450,8 @@ def update_entity(
             type_params = []
 
             for field in ["first_name", "middle_names", "last_name",
-                         "date_of_birth", "citizenship_country", "is_deceased"]:
+                         "date_of_birth", "citizenship_country", "is_deceased",
+                         "business_name"]:
                 if field in entity_data and field in ALLOWED_PHYSICAL_PERSON_FIELDS:
                     type_updates.append(f"{field} = %s")
                     type_params.append(entity_data[field])

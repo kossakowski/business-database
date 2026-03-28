@@ -302,12 +302,19 @@ class TestCEIDGProposalAddMissing:
         assert proposal.type_specific_updates["first_name"] == "JAN"
         assert proposal.type_specific_updates["last_name"] == "TESTOWY"
     
-    def test_proposes_canonical_label_from_name(self, empty_physical_entity, ceidg_profile):
-        """Should propose canonical_label built from name."""
+    def test_proposes_business_name(self, empty_physical_entity, ceidg_profile):
+        """Should propose business_name for physical person."""
         proposal = generate_ceidg_proposal(empty_physical_entity, ceidg_profile)
-        
+
+        assert "business_name" in proposal.type_specific_updates
+        assert proposal.type_specific_updates["business_name"] == "JAN TESTOWY USŁUGI"
+
+    def test_proposes_canonical_label_from_business_name(self, empty_physical_entity, ceidg_profile):
+        """Should propose canonical_label from business_name when available."""
+        proposal = generate_ceidg_proposal(empty_physical_entity, ceidg_profile)
+
         assert "canonical_label" in proposal.core_updates
-        assert proposal.core_updates["canonical_label"] == "JAN TESTOWY"
+        assert proposal.core_updates["canonical_label"] == "JAN TESTOWY USŁUGI"
     
     def test_proposes_contacts(self, empty_physical_entity, ceidg_profile):
         """Should propose adding contacts."""

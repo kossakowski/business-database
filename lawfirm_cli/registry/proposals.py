@@ -278,7 +278,18 @@ def generate_ceidg_proposal(
             proposal.type_specific_updates["first_name"] = profile.first_name
         if profile.last_name and not entity.get("last_name"):
             proposal.type_specific_updates["last_name"] = profile.last_name
-        
+
+        # Business name (firma przedsiębiorcy)
+        if profile.business_name:
+            current_biz = entity.get("business_name")
+            if not current_biz:
+                proposal.type_specific_updates["business_name"] = profile.business_name
+            elif current_biz != profile.business_name:
+                proposal.warnings.append(
+                    f"Business name differs: '{profile.business_name}' vs '{current_biz}'"
+                )
+                proposal.type_specific_updates["business_name"] = profile.business_name
+
         # Warn if names differ
         if profile.first_name and entity.get("first_name"):
             if profile.first_name.upper() != entity.get("first_name", "").upper():
@@ -290,16 +301,18 @@ def generate_ceidg_proposal(
                 proposal.warnings.append(
                     f"Last name differs: '{profile.last_name}' vs '{entity.get('last_name')}'"
                 )
-    
+
     elif entity_type == "LEGAL_PERSON":
         # Business name as registered name
         if profile.business_name and not entity.get("registered_name"):
             proposal.type_specific_updates["registered_name"] = profile.business_name
-    
-    # Core updates
+
+    # Core updates — canonical_label should be business_name for physical persons
     current_label = entity.get("canonical_label", "")
-    if not current_label:
-        # Build label from CEIDG data
+    if entity_type == "PHYSICAL_PERSON" and profile.business_name:
+        if current_label != profile.business_name:
+            proposal.core_updates["canonical_label"] = profile.business_name
+    elif not current_label:
         if entity_type == "PHYSICAL_PERSON" and profile.first_name and profile.last_name:
             proposal.core_updates["canonical_label"] = f"{profile.first_name} {profile.last_name}"
         elif profile.business_name:

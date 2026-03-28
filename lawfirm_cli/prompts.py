@@ -338,9 +338,10 @@ def prompt_entity_fields(
         data["first_name"] = prompt_field("person.first_name", existing.get("first_name"), required=True, test=test)
         data["middle_names"] = prompt_field("person.middle_names", existing.get("middle_names"), test=test)
         data["last_name"] = prompt_field("person.last_name", existing.get("last_name"), required=True, test=test)
+        data["business_name"] = prompt_field("person.business_name", existing.get("business_name"), test=test)
         data["date_of_birth"] = prompt_field("person.date_of_birth", existing.get("date_of_birth"), test=test)
         data["citizenship_country"] = prompt_field("person.citizenship_country", existing.get("citizenship_country"), test=test)
-        
+
         is_deceased = prompt_field("person.is_deceased", str(existing.get("is_deceased", False)).lower(), test=test)
         data["is_deceased"] = is_deceased == "true"
         

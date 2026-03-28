@@ -71,6 +71,7 @@ VALUES
 ('person.last_name','Nazwisko','Nazwisko zgodne z dokumentem / rejestrem.','Kowalski','Nowak','text','INTERNAL','MANUAL',NULL,'Osoba fizyczna',30,true),
 ('person.date_of_birth','Data urodzenia',NULL,'YYYY-MM-DD','1987-10-01','date','SENSITIVE','MANUAL',NULL,'Osoba fizyczna',40,true),
 ('person.citizenship_country','Obywatelstwo (kraj)','Kod kraju (np. PL, DE). Przydatne przy danych z CEIDG lub dokumentów.','PL','PL','text','INTERNAL','MANUAL','2-literowy kod kraju','Osoba fizyczna',50,true),
+('person.business_name','Firma (nazwa działalności)','Nazwa firmy osoby fizycznej prowadzącej działalność gospodarczą, np. „Jan Kowalski Kancelaria Prawna". Pobierana z CEIDG lub wpisywana ręcznie. Wymagana na fakturach.','Jan Kowalski Kancelaria Prawna',NULL,'text','INTERNAL','MANUAL/CEIDG',NULL,'Osoba fizyczna',35,true),
 ('person.is_deceased','Zmarły','Zaznacz tylko jeśli masz wiarygodną informację (np. akt zgonu/PESEL).',NULL,NULL,'boolean','SENSITIVE','MANUAL',NULL,'Osoba fizyczna',60,true)
 ON CONFLICT (field_key) DO UPDATE SET
   label_pl=EXCLUDED.label_pl, tooltip_pl=EXCLUDED.tooltip_pl, placeholder=EXCLUDED.placeholder,

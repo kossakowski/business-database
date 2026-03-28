@@ -243,7 +243,7 @@ def list_entities(
     Args:
         entity_type: Filter by type ('PHYSICAL_PERSON' or 'LEGAL_PERSON').
         search: Search in names (canonical_label, registered_name, short_name,
-                first_name, middle_names, last_name).
+                first_name, middle_names, last_name, business_name).
         identifier_type: Search by identifier type ('NIP', 'KRS', 'REGON', 'PESEL').
         identifier_value: The identifier value to search for.
         limit: Maximum number of results.

@@ -284,7 +284,7 @@ def generate_ceidg_proposal(
             current_biz = entity.get("business_name")
             if not current_biz:
                 proposal.type_specific_updates["business_name"] = profile.business_name
-            elif current_biz != profile.business_name:
+            elif current_biz.upper() != profile.business_name.upper():
                 proposal.warnings.append(
                     f"Business name differs: '{profile.business_name}' vs '{current_biz}'"
                 )

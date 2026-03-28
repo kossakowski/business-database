@@ -193,6 +193,78 @@ class TestEntityCRUD:
         with pytest.raises(EntityNotFoundError):
             get_entity(entity_id)
     
+    def test_create_physical_person_with_business_name(self, entity_tables_exist):
+        """Test creating a physical person with business_name."""
+        if not entity_tables_exist:
+            pytest.skip("Entity tables not available")
+
+        entity_id = create_entity(
+            entity_type="PHYSICAL_PERSON",
+            entity_data={
+                "canonical_label": "Jan Kowalski Kancelaria Prawna",
+                "first_name": "Jan",
+                "last_name": "Kowalski",
+                "business_name": "Jan Kowalski Kancelaria Prawna",
+            },
+        )
+
+        try:
+            entity = get_entity(entity_id)
+            assert entity["business_name"] == "Jan Kowalski Kancelaria Prawna"
+            assert entity["first_name"] == "Jan"
+            assert entity["last_name"] == "Kowalski"
+        finally:
+            delete_entity(entity_id)
+
+    def test_update_business_name(self, entity_tables_exist):
+        """Test updating business_name on a physical person."""
+        if not entity_tables_exist:
+            pytest.skip("Entity tables not available")
+
+        entity_id = create_entity(
+            entity_type="PHYSICAL_PERSON",
+            entity_data={
+                "canonical_label": "Anna Nowak",
+                "first_name": "Anna",
+                "last_name": "Nowak",
+            },
+        )
+
+        try:
+            # Verify initially NULL
+            entity = get_entity(entity_id)
+            assert entity.get("business_name") is None
+
+            # Update it
+            update_entity(entity_id, {"business_name": "Anna Nowak Usługi Księgowe"})
+
+            entity = get_entity(entity_id)
+            assert entity["business_name"] == "Anna Nowak Usługi Księgowe"
+        finally:
+            delete_entity(entity_id)
+
+    def test_search_by_business_name(self, entity_tables_exist):
+        """Test that list_entities search finds entities by business_name."""
+        if not entity_tables_exist:
+            pytest.skip("Entity tables not available")
+
+        entity_id = create_entity(
+            entity_type="PHYSICAL_PERSON",
+            entity_data={
+                "canonical_label": "Piotr Wiśniewski Projektowanie",
+                "first_name": "Piotr",
+                "last_name": "Wiśniewski",
+                "business_name": "Piotr Wiśniewski Projektowanie",
+            },
+        )
+
+        try:
+            results = list_entities(search="Projektowanie")
+            found_ids = [r["id"] for r in results]
+            assert entity_id in found_ids
+        finally:
+            delete_entity(entity_id)
+
     def test_duplicate_identifier_error(self, entity_tables_exist):
         """Test that duplicate identifiers raise error."""
         if not entity_tables_exist:

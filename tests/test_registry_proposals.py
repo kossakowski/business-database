@@ -372,6 +372,52 @@ class TestCEIDGProposalNameWarnings:
         assert any("last name differs" in w.lower() for w in proposal.warnings)
 
 
+class TestCEIDGProposalBusinessNameDiff:
+    """Tests for business_name mismatch handling in CEIDG proposals."""
+
+    def test_warns_and_updates_when_business_name_differs(self, ceidg_profile):
+        """Should warn and propose update when business_name differs."""
+        entity = {
+            "id": "test-id",
+            "entity_type": "PHYSICAL_PERSON",
+            "canonical_label": "JAN TESTOWY STARE USŁUGI",
+            "first_name": "JAN",
+            "last_name": "TESTOWY",
+            "business_name": "JAN TESTOWY STARE USŁUGI",
+            "identifiers": [],
+            "addresses": [],
+            "contacts": [],
+        }
+
+        proposal = generate_ceidg_proposal(entity, ceidg_profile)
+
+        # Should warn about the difference
+        assert any("business name differs" in w.lower() for w in proposal.warnings)
+        # Should still propose the update
+        assert "business_name" in proposal.type_specific_updates
+        assert proposal.type_specific_updates["business_name"] == "JAN TESTOWY USŁUGI"
+
+    def test_no_update_when_business_name_matches_case_insensitive(self, ceidg_profile):
+        """Should not propose update when business_name matches (case-insensitive)."""
+        entity = {
+            "id": "test-id",
+            "entity_type": "PHYSICAL_PERSON",
+            "canonical_label": "Jan Testowy Usługi",
+            "first_name": "JAN",
+            "last_name": "TESTOWY",
+            "business_name": "Jan Testowy Usługi",  # same as profile but different case
+            "identifiers": [],
+            "addresses": [],
+            "contacts": [],
+        }
+
+        proposal = generate_ceidg_proposal(entity, ceidg_profile)
+
+        # Should NOT warn or propose update — same name, different case
+        assert "business_name" not in proposal.type_specific_updates
+        assert not any("business name differs" in w.lower() for w in proposal.warnings)
+
+
 class TestCEIDGForLegalPerson:
     """Tests for CEIDG proposals when entity is a legal person."""
     

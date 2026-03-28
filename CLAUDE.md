@@ -139,7 +139,7 @@ The database uses **three schemas**:
 
 1. **`public`** - Main application tables
    - `entities` - Core entity records (UUID primary keys)
-   - `physical_persons` - Physical person details (name, DOB, citizenship)
+   - `physical_persons` - Physical person details (name, DOB, citizenship, business_name)
    - `legal_persons` - Legal person details (registered name, legal kind, country)
    - `identifiers` - Business identifiers (KRS, NIP, REGON, PESEL, RFR)
    - `addresses` - Entity addresses (MAIN, CORRESPONDENCE, REGISTERED_SEAT)

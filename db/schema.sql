@@ -978,98 +978,98 @@ ALTER TABLE ONLY public.registry_snapshots
 -- Name: SCHEMA public; Type: ACL; Schema: -; Owner: pg_database_owner
 --
 
-GRANT USAGE ON SCHEMA public TO app_readonly;
+GRANT USAGE ON SCHEMA public TO invoice_app;
 
 
 --
 -- Name: TABLE addresses; Type: ACL; Schema: public; Owner: admin
 --
 
-GRANT SELECT ON TABLE public.addresses TO app_readonly;
+GRANT SELECT ON TABLE public.addresses TO invoice_app;
 
 
 --
 -- Name: TABLE affiliations; Type: ACL; Schema: public; Owner: admin
 --
 
-GRANT SELECT ON TABLE public.affiliations TO app_readonly;
+GRANT SELECT ON TABLE public.affiliations TO invoice_app;
 
 
 --
 -- Name: TABLE contacts; Type: ACL; Schema: public; Owner: admin
 --
 
-GRANT SELECT ON TABLE public.contacts TO app_readonly;
+GRANT SELECT ON TABLE public.contacts TO invoice_app;
 
 
 --
 -- Name: TABLE entities; Type: ACL; Schema: public; Owner: admin
 --
 
-GRANT SELECT ON TABLE public.entities TO app_readonly;
+GRANT SELECT ON TABLE public.entities TO invoice_app;
 
 
 --
 -- Name: TABLE identifiers; Type: ACL; Schema: public; Owner: admin
 --
 
-GRANT SELECT ON TABLE public.identifiers TO app_readonly;
+GRANT SELECT ON TABLE public.identifiers TO invoice_app;
 
 
 --
 -- Name: TABLE invoices; Type: ACL; Schema: public; Owner: admin
 --
 
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.invoices TO app_readonly;
+GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.invoices TO invoice_app;
 
 
 --
 -- Name: SEQUENCE invoices_id_seq; Type: ACL; Schema: public; Owner: admin
 --
 
-GRANT SELECT,USAGE ON SEQUENCE public.invoices_id_seq TO app_readonly;
+GRANT SELECT,USAGE ON SEQUENCE public.invoices_id_seq TO invoice_app;
 
 
 --
 -- Name: TABLE legal_persons; Type: ACL; Schema: public; Owner: admin
 --
 
-GRANT SELECT ON TABLE public.legal_persons TO app_readonly;
+GRANT SELECT ON TABLE public.legal_persons TO invoice_app;
 
 
 --
 -- Name: TABLE physical_persons; Type: ACL; Schema: public; Owner: admin
 --
 
-GRANT SELECT ON TABLE public.physical_persons TO app_readonly;
+GRANT SELECT ON TABLE public.physical_persons TO invoice_app;
 
 
 --
 -- Name: TABLE registry_profiles_ceidg; Type: ACL; Schema: public; Owner: admin
 --
 
-GRANT SELECT ON TABLE public.registry_profiles_ceidg TO app_readonly;
+GRANT SELECT ON TABLE public.registry_profiles_ceidg TO invoice_app;
 
 
 --
 -- Name: TABLE registry_profiles_krs; Type: ACL; Schema: public; Owner: admin
 --
 
-GRANT SELECT ON TABLE public.registry_profiles_krs TO app_readonly;
+GRANT SELECT ON TABLE public.registry_profiles_krs TO invoice_app;
 
 
 --
 -- Name: TABLE registry_snapshots; Type: ACL; Schema: public; Owner: admin
 --
 
-GRANT SELECT ON TABLE public.registry_snapshots TO app_readonly;
+GRANT SELECT ON TABLE public.registry_snapshots TO invoice_app;
 
 
 --
 -- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: public; Owner: admin
 --
 
-ALTER DEFAULT PRIVILEGES FOR ROLE admin IN SCHEMA public GRANT SELECT ON TABLES TO app_readonly;
+ALTER DEFAULT PRIVILEGES FOR ROLE admin IN SCHEMA public GRANT SELECT ON TABLES TO invoice_app;
 
 
 --

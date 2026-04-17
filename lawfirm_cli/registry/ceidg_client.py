@@ -219,9 +219,9 @@ def _fetch_ceidg(
         if response.status_code == 401:
             raise CEIDGClientError("CEIDG API authentication failed. Check your API token.")
         
-        if response.status_code == 404:
+        if response.status_code in (404, 204):
             raise CEIDGNotFoundError(f"{lookup_desc} not found in CEIDG")
-        
+
         if response.status_code != 200:
             raise CEIDGClientError(
                 f"CEIDG API returned status {response.status_code}: {response.text[:200]}"

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(source .venv/bin/activate)",
+      "Bash(python scripts/collect_regional_courts.py)",
+      "Bash(source /home/kossa/code/business-database/.venv/bin/activate)",
+      "Bash(pg_dump -h localhost -p 5432 -U admin -d lawfirm --schema-only --no-owner --no-privileges --no-comments)"
+    ]
+  }
+}

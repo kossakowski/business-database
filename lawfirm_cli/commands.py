@@ -1,5 +1,8 @@
 """CLI commands using Click framework."""
 
+import json
+import sys
+
 import click
 from rich.console import Console
 
@@ -33,6 +36,8 @@ from lawfirm_cli.entities import (
     EntityNotFoundError,
     DuplicateIdentifierError,
 )
+from lawfirm_cli import entity_add as ea
+from lawfirm_cli.entity_add import prefill_from_krs, prefill_from_ceidg
 from lawfirm_cli.prompts import (
     prompt_entity_type,
     prompt_entity_fields,
@@ -137,47 +142,7 @@ def _fetch_registry_data_for_creation(entity_type: str) -> tuple:
                     console.print()
                     if click.confirm("Use this data?", default=True):
                         used_registry = "KRS"
-                        
-                        # Pre-fill entity data
-                        if profile.official_name:
-                            prefilled_data["canonical_label"] = profile.official_name
-                            prefilled_data["registered_name"] = profile.official_name
-                        
-                        # Use the parsed short name (e.g., "PROFINANCE S.A." from "PROFINANCE SPÓŁKA AKCYJNA")
-                        if profile.short_name:
-                            prefilled_data["short_name"] = profile.short_name
-                        
-                        # Use the detected legal_kind (e.g., "SPOLKA_AKCYJNA", "SPOLKA_Z_OO")
-                        if profile.legal_kind:
-                            prefilled_data["legal_kind"] = profile.legal_kind
-                        
-                        # Use the standard suffix (e.g., "S.A.", "sp. z o.o.")
-                        if profile.legal_form_suffix:
-                            prefilled_data["legal_form_suffix"] = profile.legal_form_suffix
-                        elif profile.legal_form:
-                            prefilled_data["legal_form_suffix"] = profile.legal_form
-                        
-                        prefilled_data["country"] = "PL"
-                        
-                        # Pre-fill identifiers
-                        if profile.krs:
-                            identifiers.append({"type": "KRS", "value": profile.krs})
-                        if profile.nip:
-                            identifiers.append({"type": "NIP", "value": profile.nip})
-                        if profile.regon:
-                            identifiers.append({"type": "REGON", "value": profile.regon})
-                        
-                        # Pre-fill address
-                        if profile.seat_address:
-                            address = profile.seat_address.to_dict()
-                        
-                        # Pre-fill contacts
-                        if profile.email:
-                            contacts.append({"type": "EMAIL", "value": profile.email})
-                        if profile.website:
-                            contacts.append({"type": "WEBSITE", "value": profile.website})
-                        if profile.phone:
-                            contacts.append({"type": "PHONE", "value": profile.phone})
+                        prefilled_data, identifiers, address, contacts = prefill_from_krs(profile)
                         
                         print_registry_success("Data loaded from KRS!")
                     else:
@@ -214,37 +179,7 @@ def _fetch_registry_data_for_creation(entity_type: str) -> tuple:
                         console.print()
                         if click.confirm("Use this data?", default=True):
                             used_registry = "CEIDG"
-                            
-                            # Pre-fill person data
-                            if profile.first_name:
-                                prefilled_data["first_name"] = profile.first_name
-                            if profile.last_name:
-                                prefilled_data["last_name"] = profile.last_name
-                            if profile.business_name:
-                                prefilled_data["business_name"] = profile.business_name
-                                prefilled_data["canonical_label"] = profile.business_name
-                            elif profile.first_name and profile.last_name:
-                                prefilled_data["canonical_label"] = f"{profile.first_name} {profile.last_name}"
-                            prefilled_data["citizenship_country"] = "PL"
-                            prefilled_data["is_deceased"] = False
-                            
-                            # Pre-fill identifiers
-                            if profile.nip:
-                                identifiers.append({"type": "NIP", "value": profile.nip})
-                            if profile.regon:
-                                identifiers.append({"type": "REGON", "value": profile.regon})
-                            
-                            # Pre-fill address
-                            if profile.main_address:
-                                address = profile.main_address.to_dict()
-                            
-                            # Pre-fill contacts
-                            if profile.email:
-                                contacts.append({"type": "EMAIL", "value": profile.email})
-                            if profile.website:
-                                contacts.append({"type": "WEBSITE", "value": profile.website})
-                            if profile.phone:
-                                contacts.append({"type": "PHONE", "value": profile.phone})
+                            prefilled_data, identifiers, address, contacts = prefill_from_ceidg(profile)
                             
                             print_registry_success("Data loaded from CEIDG!")
                         else:
@@ -397,6 +332,86 @@ def entity_create():
         print_error(f"Duplicate identifier: {e}")
     except Exception as e:
         print_error(f"Failed to create entity: {e}")
+
+
+@entity.command("add")
+@click.option("--json", "json_text", required=True,
+              help="One JSON object with the entity (see lawfirm_cli/entity_add.py).")
+@click.option("--apply", "do_apply", is_flag=True, default=False,
+              help="Write the entity. Without it the command only prints the preview.")
+def entity_add(json_text, do_apply):
+    """Create an entity without prompts (for agents): preview first, --apply writes.
+
+    Prints exactly one JSON object; the exit code classifies it (0 fine, 2 bad input,
+    5 duplicate identifier, 7 database or registry unreachable).
+    """
+    result = _entity_add(json_text, do_apply)
+    click.echo(json.dumps(result, ensure_ascii=False, default=str))
+    sys.exit(result["exit_code"])
+
+
+def _entity_add(json_text, do_apply):
+    try:
+        raw = json.loads(json_text)
+    except json.JSONDecodeError as e:
+        return ea.error("BAD_INPUT", f"--json is not valid JSON: {e}", ea.EXIT_BAD_INPUT)
+    if not isinstance(raw, dict):
+        return ea.error("BAD_INPUT", "--json must be one JSON object.", ea.EXIT_BAD_INPUT)
+
+    available, message = check_entities_available()
+    if not available:
+        return ea.error("DB_UNAVAILABLE", message, ea.EXIT_INFRA)
+
+    prefill, source = None, None
+    try:
+        ea.check_sources(raw)
+        if raw.get("krs"):
+            krs = ea.normalize_identifier("KRS", raw["krs"])["value"]
+            profile, _ = fetch_and_normalize_krs(krs)
+            prefill, source = ea.prefill_from_krs(profile), "KRS"
+        elif raw.get("ceidg_nip"):
+            nip = ea.normalize_identifier("NIP", raw["ceidg_nip"])["value"]
+            profile, _ = fetch_and_normalize_ceidg_by_nip(nip)
+            prefill, source = ea.prefill_from_ceidg(profile), "CEIDG"
+    except ea.BadInput as e:
+        return ea.error("BAD_INPUT", str(e), ea.EXIT_BAD_INPUT)
+    except (KRSNotFoundError, CEIDGNotFoundError) as e:
+        return ea.error("REGISTRY_NOT_FOUND", str(e) or "Not found in the registry.",
+                        ea.EXIT_BAD_INPUT)
+    except (KRSClientError, CEIDGClientError) as e:
+        return ea.error("REGISTRY_UNAVAILABLE", str(e), ea.EXIT_INFRA)
+
+    try:
+        request = ea.build_request(raw, prefill)
+    except ea.BadInput as e:
+        return ea.error("BAD_INPUT", str(e), ea.EXIT_BAD_INPUT)
+
+    try:
+        duplicates, similar = ea.find_conflicts(request, list_entities)
+    except Exception as e:
+        return ea.error("DB_READ_FAILED", str(e), ea.EXIT_INFRA)
+    view = ea.preview(request, duplicates, similar, source)
+    if duplicates:
+        return ea.error("DUPLICATE_IDENTIFIER",
+                        "An entity with this identifier already exists; use it instead.",
+                        ea.EXIT_CONFLICT, duplicates=duplicates)
+    if not do_apply:
+        return ea.answer("preview", view)
+
+    try:
+        entity_id = create_entity(
+            entity_type=request["entity_type"],
+            entity_data=request["entity_data"],
+            identifiers=request["identifiers"],
+            address=request["address"],
+            contacts=request["contacts"],
+        )
+    except DuplicateIdentifierError as e:
+        return ea.error("DUPLICATE_IDENTIFIER", str(e), ea.EXIT_CONFLICT)
+    except Exception as e:
+        return ea.error("DB_WRITE_FAILED", str(e), ea.EXIT_INFRA)
+    view["entity_id"] = entity_id
+    return ea.answer("created", view)
 
 
 @entity.command("list")
